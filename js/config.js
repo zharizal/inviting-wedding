@@ -24,7 +24,7 @@ const WEDDING = {
    *  Kosongkan ('') untuk menyembunyikan baris.
    * ────────────────────────────────────────────────── */
   groomParents: 'Putra dari Bpk. Sulaiman & Ibu Nurul Husna',  // ← Orang tua pria
-  brideParents: 'Putri dari Bpk. _______ & Ibu _______',  // ← Orang tua wanita
+  brideParents: 'Putri dari Bpk. Suman & Ibu Hartati',  // ← Orang tua wanita
 
   /* ──────────────────────────────────────────────────
    *  TANGGAL PERNIKAHAN
@@ -64,13 +64,13 @@ const WEDDING = {
    * ────────────────────────────────────────────────── */
   bankAccounts: [
     {
-      bank:          'Bank BNI',        // ← Nama bank
+      bank:          'BNI',        // ← Nama bank
       accountNumber: '1891468114',      // ← Nomor rekening
       accountName:   'Ahmad Zarizal Muslim',  // ← Atas nama
     },
     {
-      bank:          'Bank Mandiri',
-      accountNumber: '0987654321',
+      bank:          'BCA',
+      accountNumber: '3831799771',
       accountName:   'Fani Agitha',
     },
   ],
@@ -94,7 +94,7 @@ const WEDDING = {
    *  Isi path file: 'assets/music/lagu.mp3'
    *  Kosongkan ('') untuk menonaktifkan.
    * ────────────────────────────────────────────────── */
-  audioSrc: '',
+  audioSrc: 'assets/music/perfect.mp3',
 
   /* ── Dipakai di cover ────────────────────────────── */
   venueName:    'Lumbung Cafe',
