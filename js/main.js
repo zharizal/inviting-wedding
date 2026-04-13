@@ -300,6 +300,9 @@ function setupScrollAnimations() {
     { threshold: 0.1, rootMargin: '0px 0px -28px 0px' }
   );
   document.querySelectorAll('#main .reveal').forEach((el) => observer.observe(el));
+
+  // Also observe sections and cards for stagger animations
+  document.querySelectorAll('#main .inv-section, #main .event-card, #main .gift-card, #main .countdown').forEach((el) => observer.observe(el));
 }
 
 
@@ -573,6 +576,143 @@ function setupAudio() {
 }
 
 
+/* ── Lightbox ──────────────────────────────────────── */
+
+function setupLightbox() {
+  const lightbox  = document.getElementById('lightbox');
+  const lbImg     = document.getElementById('lightboxImg');
+  const counter   = document.getElementById('lightboxCounter');
+  const closeBtn  = lightbox.querySelector('.lightbox-close');
+  const prevBtn   = lightbox.querySelector('.lightbox-prev');
+  const nextBtn   = lightbox.querySelector('.lightbox-next');
+  const photos    = (WEDDING.gallery || []).slice(0, 5);
+  let current     = 0;
+
+  function show(index) {
+    current = index;
+    lbImg.classList.remove('lb-loaded');
+    lbImg.src = photos[index];
+    lbImg.onload = () => lbImg.classList.add('lb-loaded');
+    counter.textContent = `${index + 1} / ${photos.length}`;
+    prevBtn.style.visibility = index === 0 ? 'hidden' : 'visible';
+    nextBtn.style.visibility = index === photos.length - 1 ? 'hidden' : 'visible';
+  }
+
+  function open(index) {
+    show(index);
+    lightbox.removeAttribute('hidden');
+    lightbox.setAttribute('aria-hidden', 'false');
+    lightbox.classList.remove('is-closing');
+    lightbox.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    closeBtn.focus();
+  }
+
+  function close() {
+    lightbox.classList.remove('is-open');
+    lightbox.classList.add('is-closing');
+    setTimeout(() => {
+      lightbox.hidden = true;
+      lightbox.setAttribute('aria-hidden', 'true');
+      lightbox.classList.remove('is-closing');
+      document.body.style.overflow = 'auto';
+      document.body.style.overflowX = 'hidden';
+    }, 300);
+  }
+
+  // Click gallery items to open
+  document.getElementById('galleryGrid')?.addEventListener('click', (e) => {
+    const item = e.target.closest('.gallery-item');
+    if (!item) return;
+    const items = [...document.querySelectorAll('.gallery-item')];
+    const idx = items.indexOf(item);
+    if (idx >= 0 && photos[idx]) open(idx);
+  });
+
+  closeBtn.addEventListener('click', close);
+  lightbox.querySelector('.lightbox-backdrop').addEventListener('click', close);
+  prevBtn.addEventListener('click', () => { if (current > 0) show(current - 1); });
+  nextBtn.addEventListener('click', () => { if (current < photos.length - 1) show(current + 1); });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (lightbox.hidden) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft' && current > 0) show(current - 1);
+    if (e.key === 'ArrowRight' && current < photos.length - 1) show(current + 1);
+  });
+
+  // Swipe support for mobile
+  let touchStartX = 0;
+  lightbox.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].clientX; }, { passive: true });
+  lightbox.addEventListener('touchend', (e) => {
+    const diff = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0 && current > 0) show(current - 1);
+      if (diff < 0 && current < photos.length - 1) show(current + 1);
+    }
+  });
+}
+
+
+/* ── Dark Mode ─────────────────────────────────────── */
+
+function setupDarkMode() {
+  const btn = document.getElementById('themeBtn');
+  const saved = localStorage.getItem('theme');
+
+  function apply(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    btn.setAttribute('aria-label', theme === 'dark' ? 'Mode terang' : 'Mode gelap');
+  }
+
+  // Initialize from saved preference or system preference
+  if (saved) {
+    apply(saved);
+  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    apply('dark');
+  }
+
+  btn.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    apply(current === 'dark' ? 'light' : 'dark');
+  });
+}
+
+
+/* ── Share WhatsApp ────────────────────────────────── */
+
+function setupShare() {
+  const fab = document.getElementById('shareFab');
+  if (!fab) return;
+
+  fab.addEventListener('click', () => {
+    const w = WEDDING;
+    const guestName = resolveGuestName();
+    const baseUrl = window.location.origin + window.location.pathname;
+    const text = [
+      `Assalamu'alaikum Warahmatullahi Wabarakatuh`,
+      ``,
+      `Dengan memohon rahmat dan ridha Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dalam acara pernikahan kami:`,
+      ``,
+      `*${w.groom} & ${w.bride}*`,
+      ``,
+      `${w.dayName}, ${w.dateFull}`,
+      `${w.akad.venue}, ${w.venueCity}`,
+      ``,
+      `Buka undangan: ${baseUrl}${guestName ? '?to=' + encodeURIComponent(guestName) : ''}`,
+      ``,
+      `Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir. Terima kasih.`,
+      ``,
+      `Wassalamu'alaikum Warahmatullahi Wabarakatuh`,
+    ].join('\n');
+
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  });
+}
+
+
 /* ── Page Transition ────────────────────────────────── */
 
 function openInvitation({ cover, main, overlay, startAudio, particles }) {
@@ -598,6 +738,9 @@ function openInvitation({ cover, main, overlay, startAudio, particles }) {
     const reloadWishes = setupWishes();
     setupRSVP(reloadWishes);
     setupFloatNav();
+    setupLightbox();
+    setupShare();
+    document.getElementById('shareFab')?.removeAttribute('hidden');
     if (particles) particles.destroy();
     if (startAudio) startAudio();
 
@@ -612,6 +755,9 @@ function openInvitation({ cover, main, overlay, startAudio, particles }) {
 /* ── Init ───────────────────────────────────────────── */
 
 document.addEventListener('DOMContentLoaded', () => {
+
+  /* Dark mode (before render to avoid flash) */
+  setupDarkMode();
 
   /* Populate all data from config */
   renderConfig();
@@ -644,4 +790,9 @@ document.addEventListener('DOMContentLoaded', () => {
     spawnRipple(btn, e);
     setTimeout(() => openInvitation({ cover, main, overlay, startAudio, particles }), 120);
   });
+
+  /* Register service worker */
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }
 });
