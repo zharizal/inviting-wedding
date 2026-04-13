@@ -568,13 +568,8 @@ function setupAudio() {
     playing = !playing;
   });
 
-  return () => {
-    audio.play().catch(() => {});
-    musicBtn.classList.add('playing');
-    musicBtn.setAttribute('aria-label', 'Pause musik');
-    playing = true;
-  };
 }
+
 
 
 /* ── Lightbox ──────────────────────────────────────── */
@@ -684,7 +679,7 @@ function setupDarkMode() {
 
 /* ── Page Transition ────────────────────────────────── */
 
-function openInvitation({ cover, main, overlay, startAudio, particles }) {
+function openInvitation({ cover, main, overlay, particles }) {
   const btn = document.getElementById('btnOpen');
   btn.disabled = true;
   btn.setAttribute('aria-busy', 'true');
@@ -702,6 +697,14 @@ function openInvitation({ cover, main, overlay, startAudio, particles }) {
 
     main.offsetHeight; // eslint-disable-line no-unused-expressions
 
+    // Move cover action buttons to body so they persist as floating
+    const coverActions = document.querySelector('.cover-actions');
+    if (coverActions) {
+      coverActions.classList.remove('anim-item');
+      coverActions.classList.add('cover-actions--floating');
+      document.body.appendChild(coverActions);
+    }
+
     setupScrollAnimations();
     startCountdown();
     const reloadWishes = setupWishes();
@@ -709,7 +712,6 @@ function openInvitation({ cover, main, overlay, startAudio, particles }) {
     setupFloatNav();
     setupLightbox();
     if (particles) particles.destroy();
-    if (startAudio) startAudio();
 
     overlay.classList.remove('fade-in');
     overlay.classList.add('fade-out');
@@ -744,8 +746,8 @@ document.addEventListener('DOMContentLoaded', () => {
     guestBlock.style.display = 'none';
   }
 
-  /* Audio */
-  const startAudio = setupAudio();
+  /* Audio — no autoplay, user controls via button */
+  setupAudio();
 
   /* Cover button */
   const cover   = document.getElementById('cover');
@@ -755,7 +757,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btn.addEventListener('click', (e) => {
     spawnRipple(btn, e);
-    setTimeout(() => openInvitation({ cover, main, overlay, startAudio, particles }), 120);
+    setTimeout(() => openInvitation({ cover, main, overlay, particles }), 120);
   });
 
   /* Register service worker */

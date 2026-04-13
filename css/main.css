@@ -321,6 +321,26 @@ abbr { text-decoration: none; }
 .cover-action-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 .cover-action-btn.playing { border-color: var(--gold); animation: musicPulse 2s ease-in-out infinite; }
 
+/* Floating state after opening invitation */
+.cover-actions--floating {
+  position: fixed;
+  bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  right: 20px;
+  z-index: var(--z-music);
+  margin-top: 0;
+  opacity: 1;
+  transform: none;
+  animation: navAppear 0.5s ease forwards;
+}
+.cover-actions--floating .cover-action-btn {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+[data-theme="dark"] .cover-actions--floating .cover-action-btn {
+  background: rgba(26, 23, 18, 0.92);
+}
+
 @keyframes musicPulse {
   0%, 100% { box-shadow: 0 0 0 0 var(--gold-glow); }
   50%       { box-shadow: 0 0 0 8px transparent; }
@@ -1666,7 +1686,8 @@ abbr { text-decoration: none; }
 
 
 @media (max-width: 480px) {
-  .cover-action-btn { width: 36px; height: 36px; }
+  .cover-actions--floating { bottom: calc(72px + env(safe-area-inset-bottom, 0px)); right: 14px; }
+  .cover-actions--floating .cover-action-btn { width: 36px; height: 36px; }
 }
 
 
