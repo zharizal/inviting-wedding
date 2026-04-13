@@ -7,66 +7,320 @@
 
 /* ── Particle System ────────────────────────────────── */
 
-class Particles {
+class GhibliParticles {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx    = canvas.getContext('2d');
     this.pool   = [];
     this.raf    = null;
     this.W = this.H = 0;
+    this.scrollY = 0;
+    this.pageH   = 1;
+    this.isMain  = false; // true after invitation opened
     this._onResize = () => this._resize();
+    this._onScroll = () => {
+      this.scrollY = window.scrollY || 0;
+      this.pageH = Math.max(1, document.body.scrollHeight - window.innerHeight);
+    };
     window.addEventListener('resize', this._onResize);
+    window.addEventListener('scroll', this._onScroll, { passive: true });
     this._resize();
-    this._populate();
+    this._populateCover();
     this._tick();
   }
+
   _resize() {
     this.W = this.canvas.width  = window.innerWidth;
     this.H = this.canvas.height = window.innerHeight;
   }
-  _make() {
-    // Warm Ivory theme: soft gold shimmer on light background — keep alpha very low
-    const t = Math.random();
-    const color = t > 0.55 ? [184, 146, 74]   // deep amber gold
-                : t > 0.25 ? [201, 169, 110]   // standard gold
-                :             [160, 128, 68];   // warm antique gold
+
+  // Scroll progress 0–1 through the page
+  get progress() {
+    return this.isMain ? Math.min(1, this.scrollY / this.pageH) : 0;
+  }
+
+  // ── Petal (cherry blossom) ───────────────────────
+  _makePetal() {
+    const pinks = [[232, 180, 184], [240, 190, 195], [220, 160, 170], [235, 200, 200]];
     return {
-      x: Math.random() * this.W,  y: Math.random() * this.H,
-      r: Math.random() * 1.2 + 0.25,
-      alpha: Math.random() * 0.13 + 0.03,   // very subtle on light bg
-      vy: Math.random() * 0.2 + 0.05,
-      vx: (Math.random() - 0.5) * 0.12,
-      phase: Math.random() * Math.PI * 2,
-      freq:  Math.random() * 0.012 + 0.005,
-      color,
+      type: 'petal',
+      x: Math.random() * this.W,
+      y: -10 - Math.random() * this.H * 0.3,
+      size: Math.random() * 5 + 3,
+      alpha: Math.random() * 0.18 + 0.06,
+      vy: Math.random() * 0.4 + 0.15,
+      vx: Math.random() * 0.3 - 0.05,
+      rot: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.02,
+      wobble: Math.random() * Math.PI * 2,
+      wobbleSpeed: Math.random() * 0.015 + 0.008,
+      color: pinks[Math.floor(Math.random() * pinks.length)],
     };
   }
-  _populate() {
-    const n = Math.min(110, Math.floor((this.W * this.H) / 10000));
-    for (let i = 0; i < n; i++) this.pool.push(this._make());
+
+  // ── Leaf ─────────────────────────────────────────
+  _makeLeaf() {
+    const greens = [[139, 168, 136], [120, 150, 110], [160, 180, 140], [100, 140, 100]];
+    return {
+      type: 'leaf',
+      x: Math.random() * this.W,
+      y: -10 - Math.random() * this.H * 0.2,
+      size: Math.random() * 7 + 4,
+      alpha: Math.random() * 0.14 + 0.04,
+      vy: Math.random() * 0.3 + 0.1,
+      vx: Math.random() * 0.2 + 0.05,
+      rot: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.015,
+      wobble: Math.random() * Math.PI * 2,
+      wobbleSpeed: Math.random() * 0.01 + 0.005,
+      color: greens[Math.floor(Math.random() * greens.length)],
+    };
   }
+
+  // ── Golden Dust Mote ─────────────────────────────
+  _makeDust() {
+    return {
+      type: 'dust',
+      x: Math.random() * this.W,
+      y: Math.random() * this.H,
+      r: Math.random() * 1.2 + 0.3,
+      alpha: Math.random() * 0.15 + 0.04,
+      vy: -(Math.random() * 0.15 + 0.03),
+      vx: (Math.random() - 0.5) * 0.1,
+      phase: Math.random() * Math.PI * 2,
+      freq: Math.random() * 0.015 + 0.005,
+      color: [196, 170, 110],
+    };
+  }
+
+  // ── Firefly ──────────────────────────────────────
+  _makeFirefly() {
+    return {
+      type: 'firefly',
+      x: Math.random() * this.W,
+      y: Math.random() * this.H,
+      r: Math.random() * 2 + 1,
+      alpha: 0,
+      maxAlpha: Math.random() * 0.35 + 0.1,
+      vy: (Math.random() - 0.5) * 0.15,
+      vx: (Math.random() - 0.5) * 0.2,
+      phase: Math.random() * Math.PI * 2,
+      freq: Math.random() * 0.02 + 0.008,
+      color: [232, 208, 110],
+      glowSize: Math.random() * 6 + 3,
+    };
+  }
+
+  // ── Lantern Glow ─────────────────────────────────
+  _makeLantern() {
+    return {
+      type: 'lantern',
+      x: Math.random() * this.W,
+      y: Math.random() * this.H,
+      r: Math.random() * 4 + 3,
+      alpha: 0,
+      maxAlpha: Math.random() * 0.08 + 0.03,
+      vy: -(Math.random() * 0.08 + 0.02),
+      vx: (Math.random() - 0.5) * 0.05,
+      phase: Math.random() * Math.PI * 2,
+      freq: Math.random() * 0.008 + 0.003,
+      color: [232, 200, 120],
+      glowSize: Math.random() * 15 + 8,
+    };
+  }
+
+  _populateCover() {
+    const isMobile = this.W < 600;
+    const petalCount = isMobile ? 12 : 22;
+    const leafCount  = isMobile ? 4 : 8;
+    for (let i = 0; i < petalCount; i++) {
+      const p = this._makePetal();
+      p.y = Math.random() * this.H; // spread initially
+      this.pool.push(p);
+    }
+    for (let i = 0; i < leafCount; i++) {
+      const l = this._makeLeaf();
+      l.y = Math.random() * this.H;
+      this.pool.push(l);
+    }
+  }
+
+  switchToMain() {
+    this.isMain = true;
+    this.pool = [];
+    this._onScroll();
+    const isMobile = this.W < 600;
+    // Populate all types — visibility controlled by scroll progress
+    const counts = isMobile
+      ? { petal: 8, leaf: 3, dust: 10, firefly: 12, lantern: 3 }
+      : { petal: 16, leaf: 6, dust: 18, firefly: 22, lantern: 5 };
+
+    for (let i = 0; i < counts.petal; i++) { const p = this._makePetal(); p.y = Math.random() * this.H; this.pool.push(p); }
+    for (let i = 0; i < counts.leaf; i++) { const l = this._makeLeaf(); l.y = Math.random() * this.H; this.pool.push(l); }
+    for (let i = 0; i < counts.dust; i++) this.pool.push(this._makeDust());
+    for (let i = 0; i < counts.firefly; i++) this.pool.push(this._makeFirefly());
+    for (let i = 0; i < counts.lantern; i++) this.pool.push(this._makeLantern());
+  }
+
+  _drawPetal(ctx, p) {
+    const prog = this.progress;
+    // Fade out petals after 40% scroll
+    const vis = Math.max(0, 1 - prog * 2.5);
+    if (vis <= 0) return;
+
+    p.wobble += p.wobbleSpeed;
+    p.rot += p.rotSpeed;
+    p.y += p.vy;
+    p.x += p.vx + Math.sin(p.wobble) * 0.4;
+    if (p.y > this.H + 10) { p.y = -10; p.x = Math.random() * this.W; }
+    if (p.x > this.W + 10) p.x = -10;
+    if (p.x < -10) p.x = this.W + 10;
+
+    const a = p.alpha * vis;
+    const [r, g, b] = p.color;
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.beginPath();
+    // Petal shape
+    ctx.moveTo(0, -p.size);
+    ctx.bezierCurveTo(p.size * 0.6, -p.size * 0.6, p.size * 0.6, p.size * 0.3, 0, p.size * 0.5);
+    ctx.bezierCurveTo(-p.size * 0.6, p.size * 0.3, -p.size * 0.6, -p.size * 0.6, 0, -p.size);
+    ctx.fillStyle = `rgba(${r},${g},${b},${a.toFixed(3)})`;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  _drawLeaf(ctx, p) {
+    const prog = this.progress;
+    const vis = Math.max(0, 1 - prog * 2.2);
+    if (vis <= 0) return;
+
+    p.wobble += p.wobbleSpeed;
+    p.rot += p.rotSpeed;
+    p.y += p.vy;
+    p.x += p.vx + Math.sin(p.wobble) * 0.3;
+    if (p.y > this.H + 10) { p.y = -10; p.x = Math.random() * this.W; }
+
+    const a = p.alpha * vis;
+    const [r, g, b] = p.color;
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.beginPath();
+    // Leaf shape
+    ctx.moveTo(0, -p.size);
+    ctx.bezierCurveTo(p.size * 0.8, -p.size * 0.3, p.size * 0.5, p.size * 0.6, 0, p.size);
+    ctx.bezierCurveTo(-p.size * 0.5, p.size * 0.6, -p.size * 0.8, -p.size * 0.3, 0, -p.size);
+    ctx.fillStyle = `rgba(${r},${g},${b},${a.toFixed(3)})`;
+    ctx.fill();
+    // Leaf vein
+    ctx.beginPath();
+    ctx.moveTo(0, -p.size * 0.8);
+    ctx.lineTo(0, p.size * 0.8);
+    ctx.strokeStyle = `rgba(${r-20},${g-20},${b-20},${(a * 0.5).toFixed(3)})`;
+    ctx.lineWidth = 0.3;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  _drawDust(ctx, p) {
+    const prog = this.progress;
+    // Dust visible 15%–65% scroll
+    const vis = prog < 0.15 ? (prog / 0.15) : prog > 0.65 ? Math.max(0, 1 - (prog - 0.65) / 0.2) : 1;
+    if (vis <= 0) return;
+
+    p.phase += p.freq;
+    p.y += p.vy;
+    p.x += p.vx;
+    if (p.y < -4) { p.y = this.H + 4; p.x = Math.random() * this.W; }
+    if (p.x < -4) p.x = this.W + 4;
+    if (p.x > this.W + 4) p.x = -4;
+
+    const a = p.alpha * vis * (0.4 + 0.6 * Math.abs(Math.sin(p.phase)));
+    const [r, g, b] = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${r},${g},${b},${a.toFixed(3)})`;
+    ctx.fill();
+  }
+
+  _drawFirefly(ctx, p) {
+    const prog = this.progress;
+    // Fireflies visible after 40% scroll
+    const vis = prog < 0.4 ? 0 : Math.min(1, (prog - 0.4) / 0.2);
+    if (vis <= 0) { p.alpha = 0; return; }
+
+    p.phase += p.freq;
+    p.y += p.vy;
+    p.x += p.vx + Math.sin(p.phase * 3) * 0.1;
+    if (p.y < -10 || p.y > this.H + 10) { p.vy *= -1; }
+    if (p.x < -10 || p.x > this.W + 10) { p.vx *= -1; }
+
+    // Pulse alpha
+    const pulse = 0.5 + 0.5 * Math.sin(p.phase);
+    p.alpha = p.maxAlpha * vis * pulse;
+
+    const [r, g, b] = p.color;
+    // Glow
+    const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.glowSize);
+    grad.addColorStop(0, `rgba(${r},${g},${b},${(p.alpha * 0.4).toFixed(3)})`);
+    grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.glowSize, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+    // Core
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${r},${g},${b},${p.alpha.toFixed(3)})`;
+    ctx.fill();
+  }
+
+  _drawLantern(ctx, p) {
+    const prog = this.progress;
+    // Lanterns visible after 60%
+    const vis = prog < 0.6 ? 0 : Math.min(1, (prog - 0.6) / 0.2);
+    if (vis <= 0) { p.alpha = 0; return; }
+
+    p.phase += p.freq;
+    p.y += p.vy;
+    p.x += p.vx;
+    if (p.y < -20) { p.y = this.H + 20; p.x = Math.random() * this.W; }
+
+    const pulse = 0.7 + 0.3 * Math.sin(p.phase);
+    p.alpha = p.maxAlpha * vis * pulse;
+
+    const [r, g, b] = p.color;
+    const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.glowSize);
+    grad.addColorStop(0, `rgba(${r},${g},${b},${(p.alpha * 0.6).toFixed(3)})`);
+    grad.addColorStop(0.5, `rgba(${r},${g},${b},${(p.alpha * 0.2).toFixed(3)})`);
+    grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.glowSize, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+  }
+
   _tick() {
     const { ctx, W, H } = this;
     ctx.clearRect(0, 0, W, H);
     for (const p of this.pool) {
-      p.phase += p.freq;
-      p.y -= p.vy;
-      p.x += p.vx;
-      if (p.y < -4)    { p.y = H + 4; p.x = Math.random() * W; }
-      if (p.x < -4)    { p.x = W + 4; }
-      if (p.x > W + 4) { p.x = -4; }
-      const a = p.alpha * (0.35 + 0.65 * Math.abs(Math.sin(p.phase)));
-      const [r, g, b] = p.color;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${r},${g},${b},${a.toFixed(3)})`;
-      ctx.fill();
+      switch (p.type) {
+        case 'petal':   this._drawPetal(ctx, p);   break;
+        case 'leaf':    this._drawLeaf(ctx, p);    break;
+        case 'dust':    this._drawDust(ctx, p);    break;
+        case 'firefly': this._drawFirefly(ctx, p); break;
+        case 'lantern': this._drawLantern(ctx, p); break;
+      }
     }
     this.raf = requestAnimationFrame(() => this._tick());
   }
+
   destroy() {
     cancelAnimationFrame(this.raf);
     window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('scroll', this._onScroll);
   }
 }
 
@@ -688,33 +942,35 @@ function setupDarkMode() {
 function spawnFloatingOrnaments() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  const diamond = '<svg viewBox="0 0 20 20" fill="none"><rect x="5.86" y="5.86" width="8" height="8" transform="rotate(45 10 10)" stroke="currentColor" stroke-width="0.7"/></svg>';
-  const dot = '<svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="2" fill="currentColor"/></svg>';
-  const star4 = '<svg viewBox="0 0 20 20" fill="none"><path d="M10 2L12 8L18 10L12 12L10 18L8 12L2 10L8 8Z" stroke="currentColor" stroke-width="0.5"/></svg>';
+  // Ghibli nature shapes
+  const leaf = '<svg viewBox="0 0 20 20" fill="none"><path d="M10 2C14 5 16 10 10 18C4 10 6 5 10 2Z" stroke="currentColor" stroke-width="0.6" fill="currentColor" opacity="0.3"/><path d="M10 4L10 16" stroke="currentColor" stroke-width="0.3" opacity="0.4"/></svg>';
+  const petal = '<svg viewBox="0 0 16 16" fill="none"><path d="M8 1C11 4 12 8 8 15C4 8 5 4 8 1Z" fill="currentColor" opacity="0.25"/></svg>';
+  const dot = '<svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="2.5" fill="currentColor" opacity="0.4"/></svg>';
+  const firefly = '<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" fill="currentColor" opacity="0.5"/><circle cx="8" cy="8" r="5" fill="currentColor" opacity="0.08"/></svg>';
 
   const isMobile = window.innerWidth < 600;
 
   const map = [
     ['sec-couple', [
-      { svg: diamond, sz: 18, t: '12%', l: '6%', a: 'floatA', d: '7s', dl: '0s', o: 0.09 },
-      { svg: dot, sz: 10, t: '60%', r: '8%', a: 'floatB', d: '6s', dl: '1s', o: 0.12 },
-      { svg: star4, sz: 14, b: '18%', l: '10%', a: 'floatC', d: '8s', dl: '2s', o: 0.07 },
+      { svg: leaf, sz: 18, t: '12%', l: '6%', a: 'floatA', d: '7s', dl: '0s', o: 0.12, clr: '#8BA888' },
+      { svg: petal, sz: 12, t: '55%', r: '8%', a: 'floatB', d: '6s', dl: '1s', o: 0.15, clr: '#E8B4B8' },
+      { svg: leaf, sz: 14, b: '18%', l: '10%', a: 'floatC', d: '8s', dl: '2s', o: 0.1, clr: '#8BA888' },
     ]],
     ['sec-events', [
-      { svg: dot, sz: 9, t: '18%', r: '10%', a: 'floatA', d: '5.5s', dl: '0.5s', o: 0.1 },
-      { svg: diamond, sz: 16, b: '22%', l: '5%', a: 'floatB', d: '7s', dl: '1.5s', o: 0.08 },
+      { svg: petal, sz: 10, t: '18%', r: '10%', a: 'floatA', d: '5.5s', dl: '0.5s', o: 0.12, clr: '#E8B4B8' },
+      { svg: leaf, sz: 16, b: '22%', l: '5%', a: 'floatB', d: '7s', dl: '1.5s', o: 0.1, clr: '#8BA888' },
     ]],
     ['sec-gallery', [
-      { svg: star4, sz: 14, t: '8%', r: '4%', a: 'floatC', d: '6.5s', dl: '0s', o: 0.07 },
-      { svg: dot, sz: 8, b: '12%', l: '6%', a: 'floatA', d: '5s', dl: '2s', o: 0.1 },
+      { svg: dot, sz: 10, t: '8%', r: '4%', a: 'floatC', d: '6.5s', dl: '0s', o: 0.12, clr: '#C4915E' },
+      { svg: firefly, sz: 12, b: '15%', l: '6%', a: 'floatA', d: '5s', dl: '2s', o: 0.2, clr: '#E8D06E' },
     ]],
     ['sec-gift', [
-      { svg: dot, sz: 10, t: '15%', l: '8%', a: 'floatB', d: '6s', dl: '0s', o: 0.11 },
-      { svg: diamond, sz: 15, b: '18%', r: '7%', a: 'floatC', d: '7.5s', dl: '1s', o: 0.08 },
+      { svg: firefly, sz: 14, t: '15%', l: '8%', a: 'floatB', d: '6s', dl: '0s', o: 0.2, clr: '#E8C878' },
+      { svg: firefly, sz: 10, b: '18%', r: '7%', a: 'floatC', d: '7.5s', dl: '1s', o: 0.18, clr: '#E8D06E' },
     ]],
     ['sec-rsvp', [
-      { svg: star4, sz: 13, t: '10%', r: '9%', a: 'floatA', d: '6.5s', dl: '0.5s', o: 0.08 },
-      { svg: dot, sz: 8, b: '28%', l: '10%', a: 'floatB', d: '5.5s', dl: '1.5s', o: 0.1 },
+      { svg: firefly, sz: 13, t: '10%', r: '9%', a: 'floatA', d: '6.5s', dl: '0.5s', o: 0.2, clr: '#E8C878' },
+      { svg: firefly, sz: 10, b: '28%', l: '10%', a: 'floatB', d: '5.5s', dl: '1.5s', o: 0.18, clr: '#F0D888' },
     ]],
   ];
 
@@ -731,6 +987,7 @@ function spawnFloatingOrnaments() {
       s.width = item.sz + 'px';
       s.height = item.sz + 'px';
       s.opacity = item.o;
+      s.color = item.clr || 'currentColor';
       s.animation = `${item.a} ${item.d} ease-in-out ${item.dl} infinite`;
       if (item.t) s.top = item.t;
       if (item.b) s.bottom = item.b;
@@ -782,7 +1039,7 @@ function openInvitation({ cover, main, overlay, particles }) {
     setupFloatNav();
     setupLightbox();
     spawnFloatingOrnaments();
-    if (particles) particles.destroy();
+    if (particles) particles.switchToMain();
 
     // Phase 4: Reveal main content
     overlay.classList.remove('fade-in');
@@ -807,7 +1064,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupCopyButtons();
 
   /* Particles (cover only — destroyed after opening) */
-  const particles = new Particles(document.getElementById('particles'));
+  const particles = new GhibliParticles(document.getElementById('particles'));
 
   /* Guest name */
   const guestName  = resolveGuestName();
