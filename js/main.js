@@ -553,21 +553,23 @@ function setupAudio() {
   audio.src = WEDDING.audioSrc;
   musicBtn.removeAttribute('hidden');
 
-  let playing = false;
+  function setPlaying(state) {
+    musicBtn.classList.toggle('playing', state);
+    musicBtn.setAttribute('aria-label', state ? 'Pause musik' : 'Putar musik');
+  }
 
   musicBtn.addEventListener('click', () => {
-    if (playing) {
-      audio.pause();
-      musicBtn.classList.remove('playing');
-      musicBtn.setAttribute('aria-label', 'Putar musik');
-    } else {
+    if (audio.paused) {
       audio.play().catch(() => {});
-      musicBtn.classList.add('playing');
-      musicBtn.setAttribute('aria-label', 'Pause musik');
+      setPlaying(true);
+    } else {
+      audio.pause();
+      setPlaying(false);
     }
-    playing = !playing;
   });
 
+  // Return auto-play trigger for invitation open
+  return () => audio.play().then(() => setPlaying(true)).catch(() => {});
 }
 
 
@@ -816,8 +818,8 @@ document.addEventListener('DOMContentLoaded', () => {
     guestBlock.style.display = 'none';
   }
 
-  /* Audio — no autoplay, user controls via button */
-  setupAudio();
+  /* Audio — auto-play on invitation open */
+  const playAudio = setupAudio();
 
   /* Cover button */
   const cover   = document.getElementById('cover');
@@ -827,6 +829,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btn.addEventListener('click', (e) => {
     spawnRipple(btn, e);
+    if (playAudio) playAudio(); // play within user gesture context
     setTimeout(() => openInvitation({ cover, main, overlay, particles }), 120);
   });
 

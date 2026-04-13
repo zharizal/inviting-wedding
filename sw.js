@@ -2,7 +2,7 @@
    Service Worker — Cache-first for static assets
    ════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'undangan-v9';
+const CACHE_NAME = 'undangan-v10';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
