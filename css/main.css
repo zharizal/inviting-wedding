@@ -954,10 +954,14 @@ abbr { text-decoration: none; }
   position: relative;
   overflow: hidden;
   cursor: pointer;
+}
+
+/* Items 2–5: portrait cells */
+.gallery-item:not(:first-child) {
   aspect-ratio: 3 / 4;
 }
 
-/* Asymmetric layout — item 1 is the hero portrait */
+/* Item 1: hero portrait — spans 2 rows, auto-stretches to match */
 .gallery-item:nth-child(1) { grid-row: 1 / 3; }
 
 /* Warm cream tones per slot */
@@ -1013,11 +1017,11 @@ abbr { text-decoration: none; }
 
 /* Mobile gallery */
 @media (max-width: 600px) {
-  .gallery-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  .gallery-item:nth-child(1) { grid-row: 1 / 3; }
+  .gallery-grid { gap: 6px; }
+  .gallery-item:not(:first-child) { aspect-ratio: 3 / 4; }
+}
+@media (max-width: 400px) {
+  .gallery-item:not(:first-child) { aspect-ratio: 4 / 5; }
 }
 
 
