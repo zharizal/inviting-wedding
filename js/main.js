@@ -149,7 +149,8 @@ function renderConfig() {
   document.getElementById('resepsiMaps').href           = w.resepsi.mapsUrl || w.mapsUrl;
 
   /* Footer */
-  document.getElementById('footerNames').textContent = `${w.groom} & ${w.bride}`;
+  const footerEl = document.getElementById('footerNames');
+  footerEl.innerHTML = `<span class="footer-name">${escapeHtml(w.groom)}</span><span class="footer-amp">&</span><span class="footer-name">${escapeHtml(w.bride)}</span>`;
 }
 
 
