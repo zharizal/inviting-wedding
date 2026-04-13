@@ -1990,10 +1990,10 @@ html.theme-transitioning canvas {
 }
 
 /* Place images in assets/bg/ — these activate when images exist */
-.cover-bg-img  { background-image: url('../assets/bg/bg-cover.png'); }
-.couple-bg-img { background-image: url('../assets/bg/bg-couple.png'); }
-.events-bg-img { background-image: url('../assets/bg/bg-events.png'); }
-.night-bg-img  { background-image: url('../assets/bg/bg-night.png'); }
+.cover-bg-img  { background-image: url('../assets/bg/bg-cover.webp'); }
+.couple-bg-img { background-image: url('../assets/bg/bg-couple.webp'); }
+.events-bg-img { background-image: url('../assets/bg/bg-events.webp'); }
+.night-bg-img  { background-image: url('../assets/bg/bg-night.webp'); }
 
 
 /* ── CSS Landscape Fallback (Cover) ──────────────── */
