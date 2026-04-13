@@ -1664,36 +1664,8 @@ abbr { text-decoration: none; }
 }
 
 
-/* ══════════════════════════════════════════════════════
-   SHARE FAB
-   ══════════════════════════════════════════════════════ */
-.share-fab {
-  position: fixed;
-  bottom: 24px;
-  left: 24px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: none;
-  background: #25D366;
-  color: #fff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: var(--z-music);
-  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.35);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: navAppear 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-.share-fab:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 24px rgba(37, 211, 102, 0.5);
-}
-
 @media (max-width: 480px) {
   .theme-btn { bottom: 16px; right: 64px; width: 40px; height: 40px; }
-  .share-fab { bottom: 16px; left: 16px; width: 44px; height: 44px; }
 }
 
 

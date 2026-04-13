@@ -681,38 +681,6 @@ function setupDarkMode() {
 }
 
 
-/* ── Share WhatsApp ────────────────────────────────── */
-
-function setupShare() {
-  const fab = document.getElementById('shareFab');
-  if (!fab) return;
-
-  fab.addEventListener('click', () => {
-    const w = WEDDING;
-    const guestName = resolveGuestName();
-    const baseUrl = window.location.origin + window.location.pathname;
-    const text = [
-      `Assalamu'alaikum Warahmatullahi Wabarakatuh`,
-      ``,
-      `Dengan memohon rahmat dan ridha Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dalam acara pernikahan kami:`,
-      ``,
-      `*${w.groom} & ${w.bride}*`,
-      ``,
-      `${w.dayName}, ${w.dateFull}`,
-      `${w.akad.venue}, ${w.venueCity}`,
-      ``,
-      `Buka undangan: ${baseUrl}${guestName ? '?to=' + encodeURIComponent(guestName) : ''}`,
-      ``,
-      `Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir. Terima kasih.`,
-      ``,
-      `Wassalamu'alaikum Warahmatullahi Wabarakatuh`,
-    ].join('\n');
-
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-  });
-}
-
-
 /* ── Page Transition ────────────────────────────────── */
 
 function openInvitation({ cover, main, overlay, startAudio, particles }) {
@@ -739,8 +707,6 @@ function openInvitation({ cover, main, overlay, startAudio, particles }) {
     setupRSVP(reloadWishes);
     setupFloatNav();
     setupLightbox();
-    setupShare();
-    document.getElementById('shareFab')?.removeAttribute('hidden');
     if (particles) particles.destroy();
     if (startAudio) startAudio();
 
