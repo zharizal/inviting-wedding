@@ -23,24 +23,24 @@ const WEDDING = {
    *  NAMA ORANG TUA
    *  Kosongkan ('') untuk menyembunyikan baris.
    * ────────────────────────────────────────────────── */
-  groomParents: 'Putra dari Bpk. _______ & Ibu _______',  // ← Orang tua pria
+  groomParents: 'Putra dari Bpk. Sulaiman & Ibu Nurul Husna',  // ← Orang tua pria
   brideParents: 'Putri dari Bpk. _______ & Ibu _______',  // ← Orang tua wanita
 
   /* ──────────────────────────────────────────────────
    *  TANGGAL PERNIKAHAN
    * ────────────────────────────────────────────────── */
-  dateISO:  '2026-09-12',          // ← Format YYYY-MM-DD
-  dayName:  'Sabtu',               // ← Nama hari
-  dateFull: '12 September 2026',   // ← Teks tanggal yang tampil
+  dateISO:  '2026-10-18',          // ← Format YYYY-MM-DD
+  dayName:  'Minggu',               // ← Nama hari
+  dateFull: '18 Oktober 2026',   // ← Teks tanggal yang tampil
 
   /* ──────────────────────────────────────────────────
    *  AKAD NIKAH
    * ────────────────────────────────────────────────── */
   akad: {
     time:    '08.00 WIB',
-    venue:   'Masjid Al-Azhar',
-    address: 'Jl. Sisingamangaraja, Kebayoran Baru, Jakarta Selatan',
-    mapsUrl: 'https://maps.google.com/?q=Masjid+Al-Azhar+Jakarta',
+    venue:   'Lumbung Cafe',
+    address: 'Tanah Enam Ratus, Kec. Medan Marelan, Kota Medan, Sumatera Utara 20244, Indonesia',
+    mapsUrl: 'https://www.google.com/maps/place/LUMBUNG+KULINER/@3.6875523,98.6532975,17z/data=!3m1!4b1!4m6!3m5!1s0x30312dac0663efcf:0x6a1904298d730b1f!8m2!3d3.6875523!4d98.6558724!16s%2Fg%2F11rnbwbxc9?entry=ttu&g_ep=EgoyMDI2MDQwOC4wIKXMDSoASAFQAw%3D%3D',
   },
 
   /* ──────────────────────────────────────────────────
@@ -48,15 +48,15 @@ const WEDDING = {
    * ────────────────────────────────────────────────── */
   resepsi: {
     time:    '11.00 – 14.00 WIB',
-    venue:   'Gedung Serbaguna Nusantara',
-    address: 'Jl. Gatot Subroto No. 10, Jakarta Selatan',
-    mapsUrl: 'https://maps.google.com/?q=Gatot+Subroto+Jakarta+Selatan',
+    venue:   'Lumbung Cafe',
+    address: 'Tanah Enam Ratus, Kec. Medan Marelan, Kota Medan, Sumatera Utara 20244, Indonesia',
+    mapsUrl: 'https://www.google.com/maps/place/LUMBUNG+KULINER/@3.6875523,98.6532975,17z/data=!3m1!4b1!4m6!3m5!1s0x30312dac0663efcf:0x6a1904298d730b1f!8m2!3d3.6875523!4d98.6558724!16s%2Fg%2F11rnbwbxc9?entry=ttu&g_ep=EgoyMDI2MDQwOC4wIKXMDSoASAFQAw%3D%3D',
   },
 
   /* ──────────────────────────────────────────────────
    *  COUNTDOWN  —  Format: 'YYYY-MM-DDTHH:mm:ss'
    * ────────────────────────────────────────────────── */
-  countdownISO: '2026-09-12T08:00:00',
+  countdownISO: '2026-10-18T08:00:00',
 
   /* ──────────────────────────────────────────────────
    *  KADO DIGITAL
@@ -64,8 +64,8 @@ const WEDDING = {
    * ────────────────────────────────────────────────── */
   bankAccounts: [
     {
-      bank:          'Bank BCA',        // ← Nama bank
-      accountNumber: '1234567890',      // ← Nomor rekening
+      bank:          'Bank BNI',        // ← Nama bank
+      accountNumber: '1891468114',      // ← Nomor rekening
       accountName:   'Ahmad Zarizal Muslim',  // ← Atas nama
     },
     {
@@ -82,11 +82,11 @@ const WEDDING = {
    *  Biarkan kosong [] untuk tampilkan placeholder elegan.
    * ────────────────────────────────────────────────── */
   gallery: [
-    // 'assets/gallery/foto-1.jpg',   // ← Ganti dengan path foto asli
-    // 'assets/gallery/foto-2.jpg',
-    // 'assets/gallery/foto-3.jpg',
-    // 'assets/gallery/foto-4.jpg',
-    // 'assets/gallery/foto-5.jpg',
+    'assets/gallery/foto-1.jpg',
+    'assets/gallery/foto-2.jpg',
+    'assets/gallery/foto-3.jpg',
+    'assets/gallery/foto-4.jpg',
+    'assets/gallery/foto-5.jpg',
   ],
 
   /* ──────────────────────────────────────────────────
@@ -97,8 +97,8 @@ const WEDDING = {
   audioSrc: '',
 
   /* ── Dipakai di cover ────────────────────────────── */
-  venueName:    'Gedung Serbaguna Nusantara',
-  venueCity:    'Jakarta Selatan',
-  venueAddress: 'Jl. Gatot Subroto No. 10, Jakarta Selatan',
-  mapsUrl:      'https://maps.google.com/?q=Gatot+Subroto+Jakarta+Selatan',
+  venueName:    'Lumbung Cafe',
+  venueCity:    'Marelan, Medan',
+  venueAddress: 'Tanah Enam Ratus, Kec. Medan Marelan, Kota Medan, Sumatera Utara 20244, Indonesia',
+  mapsUrl:      'https://www.google.com/maps/place/LUMBUNG+KULINER/@3.6875523,98.6532975,17z/data=!3m1!4b1!4m6!3m5!1s0x30312dac0663efcf:0x6a1904298d730b1f!8m2!3d3.6875523!4d98.6558724!16s%2Fg%2F11rnbwbxc9?entry=ttu&g_ep=EgoyMDI2MDQwOC4wIKXMDSoASAFQAw%3D%3D',
 };
