@@ -999,6 +999,34 @@ function spawnFloatingOrnaments() {
 }
 
 
+/* ── Stars for Night Sections ──────────────────────── */
+
+function spawnStars() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('.stars-layer').forEach(layer => {
+    const count = window.innerWidth < 600 ? 25 : 50;
+    for (let i = 0; i < count; i++) {
+      const star = document.createElement('div');
+      const size = Math.random() * 2 + 0.5;
+      const x = Math.random() * 100;
+      const y = Math.random() * 100;
+      const delay = Math.random() * 5;
+      const dur = Math.random() * 3 + 2;
+      star.style.cssText = `
+        position:absolute;
+        width:${size}px;height:${size}px;
+        left:${x}%;top:${y}%;
+        background:rgba(255,255,255,${Math.random()*0.5+0.3});
+        border-radius:50%;
+        animation:starBlink ${dur}s ease-in-out ${delay}s infinite alternate;
+        pointer-events:none;
+      `;
+      layer.appendChild(star);
+    }
+  });
+}
+
+
 /* ── Page Transition ────────────────────────────────── */
 
 function openInvitation({ cover, main, overlay, particles }) {
@@ -1039,6 +1067,7 @@ function openInvitation({ cover, main, overlay, particles }) {
     setupFloatNav();
     setupLightbox();
     spawnFloatingOrnaments();
+    spawnStars();
     if (particles) particles.switchToMain();
 
     // Phase 4: Reveal main content

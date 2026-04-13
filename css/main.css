@@ -1969,4 +1969,350 @@ html.theme-transitioning canvas {
   }
   .inv-section.in-view .section-ornament { animation: none !important; }
   .lightbox, .lightbox-img { animation: none !important; transition: none !important; }
+  .cloud { animation: none !important; }
+  .stars-layer { animation: none !important; }
 }
+
+
+/* ══════════════════════════════════════════════════════
+   GHIBLI ILLUSTRATED LANDSCAPE — CSS Layers
+   ══════════════════════════════════════════════════════ */
+
+/* ── Background Image Slots ──────────────────────── */
+.ghibli-bg-img {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Place images in assets/bg/ — these activate when images exist */
+.cover-bg-img  { background-image: url('../assets/bg/bg-cover.png'); }
+.couple-bg-img { background-image: url('../assets/bg/bg-couple.png'); }
+.events-bg-img { background-image: url('../assets/bg/bg-events.png'); }
+.night-bg-img  { background-image: url('../assets/bg/bg-night.png'); }
+
+
+/* ── CSS Landscape Fallback (Cover) ──────────────── */
+
+/* Sky gradient */
+.ghibli-sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    #7EB8D8 0%,
+    #A8D4E8 25%,
+    #C8E4F0 45%,
+    #E8F0E8 65%,
+    #D8E8D0 80%,
+    #C0D8A8 100%);
+  z-index: 0;
+}
+
+/* Fluffy clouds */
+.ghibli-clouds {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.cloud {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  filter: blur(2px);
+}
+
+/* Cover clouds */
+.cloud-1 {
+  width: 180px; height: 60px;
+  top: 8%; left: -5%;
+  border-radius: 60px;
+  box-shadow: 40px -15px 0 10px rgba(255,255,255,0.7),
+              80px -5px 0 20px rgba(255,255,255,0.6),
+              120px -10px 0 8px rgba(255,255,255,0.5);
+  animation: cloudDrift1 35s linear infinite;
+}
+.cloud-2 {
+  width: 140px; height: 45px;
+  top: 15%; right: -10%;
+  border-radius: 50px;
+  box-shadow: 30px -10px 0 8px rgba(255,255,255,0.7),
+              60px -5px 0 15px rgba(255,255,255,0.6);
+  animation: cloudDrift2 45s linear infinite;
+}
+.cloud-3 {
+  width: 200px; height: 55px;
+  top: 22%; left: 20%;
+  border-radius: 55px;
+  opacity: 0.6;
+  box-shadow: 50px -12px 0 12px rgba(255,255,255,0.5),
+              100px -8px 0 18px rgba(255,255,255,0.4);
+  animation: cloudDrift3 55s linear infinite;
+}
+
+/* Section clouds (smaller) */
+.section-clouds {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.cloud-s1 {
+  width: 120px; height: 40px;
+  top: 10%; left: -8%;
+  border-radius: 40px;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 30px -8px 0 8px rgba(255,255,255,0.5);
+  animation: cloudDrift1 40s linear infinite;
+  filter: blur(2px);
+}
+.cloud-s2 {
+  width: 100px; height: 35px;
+  top: 18%; right: -10%;
+  border-radius: 35px;
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 25px -6px 0 6px rgba(255,255,255,0.4);
+  animation: cloudDrift2 50s linear infinite;
+  filter: blur(2px);
+}
+.cloud-s3 {
+  width: 150px; height: 45px;
+  top: 8%; left: -12%;
+  border-radius: 45px;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 35px -10px 0 10px rgba(255,255,255,0.45),
+              70px -5px 0 15px rgba(255,255,255,0.35);
+  animation: cloudDrift1 38s linear infinite;
+  filter: blur(3px);
+}
+.cloud-s4 {
+  width: 110px; height: 38px;
+  top: 20%; right: -15%;
+  border-radius: 38px;
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 28px -8px 0 8px rgba(255,255,255,0.4);
+  animation: cloudDrift2 48s linear infinite;
+  filter: blur(2px);
+}
+
+@keyframes cloudDrift1 {
+  from { transform: translateX(-30%); }
+  to   { transform: translateX(110vw); }
+}
+@keyframes cloudDrift2 {
+  from { transform: translateX(30%); }
+  to   { transform: translateX(-110vw); }
+}
+@keyframes cloudDrift3 {
+  from { transform: translateX(-20%); }
+  to   { transform: translateX(100vw); }
+}
+
+
+/* Mountains (distant, blue-gray) */
+.ghibli-mountains {
+  position: absolute;
+  bottom: 35%;
+  left: 0; right: 0;
+  height: 30%;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    /* Mountain 1 - left */
+    radial-gradient(ellipse 45% 100% at 20% 100%, #8AA8B8 0%, transparent 70%),
+    /* Mountain 2 - center */
+    radial-gradient(ellipse 50% 120% at 50% 100%, #7A98A8 0%, transparent 70%),
+    /* Mountain 3 - right */
+    radial-gradient(ellipse 40% 100% at 80% 100%, #8AA8B8 0%, transparent 70%);
+  opacity: 0.5;
+}
+
+/* Rolling hills (green, layered) */
+.ghibli-hills {
+  position: absolute;
+  bottom: 15%;
+  left: 0; right: 0;
+  height: 35%;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    /* Hill 1 - left foreground */
+    radial-gradient(ellipse 60% 80% at 15% 100%, #6A9A58 0%, transparent 65%),
+    /* Hill 2 - center */
+    radial-gradient(ellipse 70% 90% at 55% 100%, #78A868 0%, transparent 60%),
+    /* Hill 3 - right */
+    radial-gradient(ellipse 55% 75% at 85% 100%, #6A9A58 0%, transparent 65%),
+    /* Hill 4 - background layer */
+    radial-gradient(ellipse 80% 60% at 40% 100%, #88B878 0%, transparent 70%);
+  opacity: 0.65;
+}
+
+/* Meadow (bottom green strip) */
+.ghibli-meadow {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  height: 20%;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+    rgba(100, 160, 80, 0.3) 0%,
+    rgba(80, 140, 60, 0.5) 40%,
+    rgba(70, 130, 50, 0.6) 100%);
+}
+
+
+/* ── Floral Borders ──────────────────────────────── */
+.floral-border {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 50px;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.8;
+}
+.floral-border svg {
+  width: 100%;
+  height: 100%;
+}
+.floral-border--left  { left: 0; }
+.floral-border--right { right: 0; }
+
+@media (max-width: 480px) {
+  .floral-border { width: 35px; opacity: 0.6; }
+}
+@media (min-width: 768px) {
+  .floral-border { width: 65px; }
+}
+
+
+/* ── Stars Layer (Night sections) ────────────────── */
+.stars-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 25% 35%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 40% 10%, rgba(255,255,255,0.7) 50%, transparent 50%),
+    radial-gradient(1.2px 1.2px at 55% 45%, rgba(255,255,255,0.4) 50%, transparent 50%),
+    radial-gradient(1px 1px at 70% 20%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 85% 55%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 15% 60%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1.2px 1.2px at 30% 80%, rgba(255,255,255,0.4) 50%, transparent 50%),
+    radial-gradient(1px 1px at 50% 70%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 65% 85%, rgba(255,255,255,0.3) 50%, transparent 50%),
+    radial-gradient(1px 1px at 80% 40%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1.3px 1.3px at 92% 25%, rgba(255,255,255,0.4) 50%, transparent 50%),
+    radial-gradient(1px 1px at 5% 90%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 45% 5%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 75% 65%, rgba(255,255,255,0.4) 50%, transparent 50%);
+  animation: starsTwinkle 6s ease-in-out infinite alternate;
+}
+
+@keyframes starsTwinkle {
+  0%   { opacity: 0.6; }
+  50%  { opacity: 0.9; }
+  100% { opacity: 0.7; }
+}
+@keyframes starBlink {
+  0%   { opacity: 0.2; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1.2); }
+}
+
+
+/* ── Text Readability over backgrounds ───────────── */
+
+/* Cover text needs contrast over landscape */
+#cover .cover-content {
+  text-shadow: 0 1px 8px rgba(255,255,255,0.5);
+}
+#cover .name {
+  text-shadow: 0 2px 12px rgba(255,255,255,0.6), 0 0 30px rgba(255,255,255,0.3);
+}
+#cover .badge-text,
+#cover .cover-date {
+  text-shadow: 0 1px 6px rgba(255,255,255,0.5);
+}
+#cover .guest-name {
+  text-shadow: 0 1px 8px rgba(255,255,255,0.4);
+}
+
+/* Couple section text panel */
+.couple-section .section-inner {
+  position: relative;
+  z-index: 5;
+  background: rgba(247, 243, 236, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: var(--radius);
+  padding: 40px 28px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.06);
+}
+
+/* Events section text panel */
+.events-section .section-inner {
+  position: relative;
+  z-index: 5;
+  background: rgba(245, 230, 211, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: var(--radius);
+  padding: 40px 24px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.06);
+}
+
+/* Gift section text overlay */
+.gift-section .section-inner {
+  position: relative;
+  z-index: 5;
+}
+
+/* RSVP section text overlay */
+.rsvp-section .section-inner {
+  position: relative;
+  z-index: 5;
+}
+
+/* Footer text glow */
+.inv-footer .footer-name {
+  text-shadow: 0 0 30px rgba(232, 200, 120, 0.2), 0 0 60px rgba(232, 200, 120, 0.08);
+}
+
+/* ── Dark mode landscape overrides ───────────────── */
+[data-theme="dark"] .ghibli-sky {
+  background: linear-gradient(180deg,
+    #1A2A20 0%, #203028 30%, #2A3A28 50%, #1E2A1C 100%);
+}
+[data-theme="dark"] .ghibli-mountains { opacity: 0.3; }
+[data-theme="dark"] .ghibli-hills { opacity: 0.4; }
+[data-theme="dark"] .ghibli-meadow { opacity: 0.3; }
+[data-theme="dark"] .cloud { background: rgba(200, 220, 200, 0.15); filter: blur(3px); }
+[data-theme="dark"] .cloud-1,
+[data-theme="dark"] .cloud-2,
+[data-theme="dark"] .cloud-3 { box-shadow: none; }
+[data-theme="dark"] .floral-border { opacity: 0.35; }
+
+[data-theme="dark"] #cover .name {
+  text-shadow: 0 2px 12px rgba(0,0,0,0.5), 0 0 30px rgba(212,176,120,0.15);
+}
+[data-theme="dark"] #cover .cover-content {
+  text-shadow: 0 1px 8px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] .couple-section .section-inner {
+  background: rgba(26, 32, 24, 0.8);
+}
+[data-theme="dark"] .events-section .section-inner {
+  background: rgba(42, 34, 24, 0.8);
+}
+
+[data-theme="dark"] .stars-layer { opacity: 0.8; }
