@@ -347,7 +347,7 @@ function startCountdown() {
 
 /* ── RSVP Form ──────────────────────────────────────── */
 
-function setupRSVP() {
+function setupRSVP(reloadWishes) {
   const form    = document.getElementById('rsvpForm');
   const success = document.getElementById('rsvpSuccess');
   const errorEl = document.getElementById('rsvpError');
@@ -387,6 +387,7 @@ function setupRSVP() {
 
       form.hidden = true;
       success.removeAttribute('hidden');
+      if (reloadWishes) reloadWishes();
     } catch {
       submitBtn.disabled = false;
       submitBtn.querySelector('.btn-label').textContent = 'Kirim';
@@ -396,6 +397,102 @@ function setupRSVP() {
       }
     }
   });
+}
+
+
+/* ── Wishes List ───────────────────────────────────── */
+
+function setupWishes() {
+  const container = document.getElementById('wishesItems');
+  const loadMoreBtn = document.getElementById('wishesLoadMore');
+  if (!container) return;
+
+  let offset = 0;
+  const limit = 10;
+
+  function renderSkeleton() {
+    for (let i = 0; i < 3; i++) {
+      const el = document.createElement('div');
+      el.className = 'wish-skeleton';
+      el.innerHTML = '<div class="skel-line"></div><div class="skel-line"></div>';
+      container.appendChild(el);
+    }
+  }
+
+  function clearSkeleton() {
+    container.querySelectorAll('.wish-skeleton').forEach(el => el.remove());
+  }
+
+  function renderWish(w) {
+    const card = document.createElement('div');
+    card.className = 'wish-card';
+
+    const badgeClass = w.attendance === 'hadir' ? 'wish-badge wish-badge--hadir' : 'wish-badge';
+    const badgeText = w.attendance === 'hadir' ? 'Hadir' : 'Tidak Hadir';
+
+    card.innerHTML = `
+      <div class="wish-header">
+        <span class="wish-name">${escapeHtml(w.name)}</span>
+        <span class="${badgeClass}">${badgeText}</span>
+      </div>
+      ${w.message ? `<p class="wish-message">${escapeHtml(w.message)}</p>` : ''}
+    `;
+    container.appendChild(card);
+  }
+
+  async function loadWishes(append) {
+    if (!append) {
+      container.innerHTML = '';
+      renderSkeleton();
+    }
+
+    try {
+      const res = await fetch(
+        `${SUPABASE.url}/rest/v1/rsvp?select=name,attendance,message&order=created_at.desc&offset=${offset}&limit=${limit}`,
+        {
+          headers: {
+            'apikey': SUPABASE.key,
+            'Authorization': `Bearer ${SUPABASE.key}`,
+          },
+        }
+      );
+
+      if (!res.ok) throw new Error(res.statusText);
+      const data = await res.json();
+
+      clearSkeleton();
+
+      if (!data.length && offset === 0) {
+        container.innerHTML = '<p class="wish-empty">Jadilah yang pertama mengirim ucapan.</p>';
+        return;
+      }
+
+      data.forEach(renderWish);
+
+      if (data.length >= limit) {
+        offset += limit;
+        loadMoreBtn.removeAttribute('hidden');
+      } else {
+        loadMoreBtn.hidden = true;
+      }
+    } catch {
+      clearSkeleton();
+      if (offset === 0) {
+        container.innerHTML = '<p class="wish-empty">Belum ada ucapan.</p>';
+      }
+    }
+  }
+
+  loadMoreBtn.addEventListener('click', () => loadWishes(true));
+
+  // Expose reload for after RSVP submit
+  return () => { offset = 0; loadWishes(false); };
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 
 
@@ -478,7 +575,7 @@ function setupAudio() {
 
 /* ── Page Transition ────────────────────────────────── */
 
-function openInvitation({ cover, main, overlay, startAudio }) {
+function openInvitation({ cover, main, overlay, startAudio, particles }) {
   const btn = document.getElementById('btnOpen');
   btn.disabled = true;
   btn.setAttribute('aria-busy', 'true');
@@ -498,8 +595,10 @@ function openInvitation({ cover, main, overlay, startAudio }) {
 
     setupScrollAnimations();
     startCountdown();
-    setupRSVP();
+    const reloadWishes = setupWishes();
+    setupRSVP(reloadWishes);
     setupFloatNav();
+    if (particles) particles.destroy();
     if (startAudio) startAudio();
 
     overlay.classList.remove('fade-in');
@@ -520,8 +619,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderGift();
   setupCopyButtons();
 
-  /* Particles (cover only — stops being visible once sections cover it) */
-  new Particles(document.getElementById('particles'));
+  /* Particles (cover only — destroyed after opening) */
+  const particles = new Particles(document.getElementById('particles'));
 
   /* Guest name */
   const guestName  = resolveGuestName();
@@ -543,6 +642,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btn.addEventListener('click', (e) => {
     spawnRipple(btn, e);
-    setTimeout(() => openInvitation({ cover, main, overlay, startAudio }), 120);
+    setTimeout(() => openInvitation({ cover, main, overlay, startAudio, particles }), 120);
   });
 });

@@ -14,6 +14,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://inviting-wedding.vercel.app/assets/og-image.jpg">
   <title>Undangan Pernikahan</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💍</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cinzel:wght@400;600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;1,9..40,300&display=swap" rel="stylesheet">
@@ -246,6 +247,13 @@
           </div>
           <p class="success-title">Jazakumullahu Khairan</p>
           <p class="success-msg">Ucapan dan doa Anda telah kami terima.<br>Kami sangat menantikan kehadiran Anda.</p>
+        </div>
+
+        <!-- Wishes list -->
+        <div class="wishes-list reveal" id="wishesList" style="--reveal-delay:0.6s" aria-label="Ucapan dan doa tamu">
+          <h3 class="wishes-title">Ucapan & Doa</h3>
+          <div class="wishes-items" id="wishesItems"></div>
+          <button class="wishes-load-more" id="wishesLoadMore" type="button" hidden>Lihat Lainnya</button>
         </div>
       </div>
     </section>

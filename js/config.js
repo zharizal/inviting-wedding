@@ -82,11 +82,11 @@ const WEDDING = {
    *  Biarkan kosong [] untuk tampilkan placeholder elegan.
    * ────────────────────────────────────────────────── */
   gallery: [
-    'assets/gallery/foto-1.jpg',
-    'assets/gallery/foto-2.jpg',
-    'assets/gallery/foto-3.jpg',
-    'assets/gallery/foto-4.jpg',
-    'assets/gallery/foto-5.jpg',
+    'assets/gallery/foto-1.webp',
+    'assets/gallery/foto-2.webp',
+    'assets/gallery/foto-3.webp',
+    'assets/gallery/foto-4.webp',
+    'assets/gallery/foto-5.webp',
   ],
 
   /* ──────────────────────────────────────────────────
