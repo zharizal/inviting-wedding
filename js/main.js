@@ -681,6 +681,65 @@ function setupDarkMode() {
 }
 
 
+/* ── Floating Ambient Ornaments ─────────────────────── */
+
+function spawnFloatingOrnaments() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const diamond = '<svg viewBox="0 0 20 20" fill="none"><rect x="5.86" y="5.86" width="8" height="8" transform="rotate(45 10 10)" stroke="currentColor" stroke-width="0.7"/></svg>';
+  const dot = '<svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="2" fill="currentColor"/></svg>';
+  const star4 = '<svg viewBox="0 0 20 20" fill="none"><path d="M10 2L12 8L18 10L12 12L10 18L8 12L2 10L8 8Z" stroke="currentColor" stroke-width="0.5"/></svg>';
+
+  const isMobile = window.innerWidth < 600;
+
+  const map = [
+    ['sec-couple', [
+      { svg: diamond, sz: 18, t: '12%', l: '6%', a: 'floatA', d: '7s', dl: '0s', o: 0.09 },
+      { svg: dot, sz: 10, t: '60%', r: '8%', a: 'floatB', d: '6s', dl: '1s', o: 0.12 },
+      { svg: star4, sz: 14, b: '18%', l: '10%', a: 'floatC', d: '8s', dl: '2s', o: 0.07 },
+    ]],
+    ['sec-events', [
+      { svg: dot, sz: 9, t: '18%', r: '10%', a: 'floatA', d: '5.5s', dl: '0.5s', o: 0.1 },
+      { svg: diamond, sz: 16, b: '22%', l: '5%', a: 'floatB', d: '7s', dl: '1.5s', o: 0.08 },
+    ]],
+    ['sec-gallery', [
+      { svg: star4, sz: 14, t: '8%', r: '4%', a: 'floatC', d: '6.5s', dl: '0s', o: 0.07 },
+      { svg: dot, sz: 8, b: '12%', l: '6%', a: 'floatA', d: '5s', dl: '2s', o: 0.1 },
+    ]],
+    ['sec-gift', [
+      { svg: dot, sz: 10, t: '15%', l: '8%', a: 'floatB', d: '6s', dl: '0s', o: 0.11 },
+      { svg: diamond, sz: 15, b: '18%', r: '7%', a: 'floatC', d: '7.5s', dl: '1s', o: 0.08 },
+    ]],
+    ['sec-rsvp', [
+      { svg: star4, sz: 13, t: '10%', r: '9%', a: 'floatA', d: '6.5s', dl: '0.5s', o: 0.08 },
+      { svg: dot, sz: 8, b: '28%', l: '10%', a: 'floatB', d: '5.5s', dl: '1.5s', o: 0.1 },
+    ]],
+  ];
+
+  map.forEach(([id, items]) => {
+    const sec = document.getElementById(id);
+    if (!sec) return;
+    items.forEach((item, i) => {
+      if (isMobile && i > 0) return;
+      const el = document.createElement('div');
+      el.className = 'floating-ornament';
+      el.setAttribute('aria-hidden', 'true');
+      el.innerHTML = item.svg;
+      const s = el.style;
+      s.width = item.sz + 'px';
+      s.height = item.sz + 'px';
+      s.opacity = item.o;
+      s.animation = `${item.a} ${item.d} ease-in-out ${item.dl} infinite`;
+      if (item.t) s.top = item.t;
+      if (item.b) s.bottom = item.b;
+      if (item.l) s.left = item.l;
+      if (item.r) s.right = item.r;
+      sec.appendChild(el);
+    });
+  });
+}
+
+
 /* ── Page Transition ────────────────────────────────── */
 
 function openInvitation({ cover, main, overlay, particles }) {
@@ -720,6 +779,7 @@ function openInvitation({ cover, main, overlay, particles }) {
     setupRSVP(reloadWishes);
     setupFloatNav();
     setupLightbox();
+    spawnFloatingOrnaments();
     if (particles) particles.destroy();
 
     // Phase 4: Reveal main content
