@@ -1763,6 +1763,154 @@ abbr { text-decoration: none; }
   to   { opacity: 1; transform: scale(1); letter-spacing: inherit; }
 }
 
+
+/* ══════════════════════════════════════════════════════
+   PREMIUM ANIMATION UPGRADE
+   Cinematic · Elegant · Lightweight
+   ══════════════════════════════════════════════════════ */
+
+/* ── Cover Cinematic Open ──────────────────────────── */
+#cover.is-leaving {
+  transition: opacity 0.8s ease, filter 0.8s ease,
+              transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  filter: blur(4px);
+  transform: scale(0.97);
+  pointer-events: none;
+}
+
+/* ── Section-Specific Reveal Variations ────────────── */
+
+/* Bismillah: sacred scale + deblur */
+.couple-section .bismillah.reveal {
+  transform: scale(0.97);
+  filter: blur(2px);
+  transition: opacity 1s ease var(--reveal-delay, 0s),
+              transform 1s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s),
+              filter 1s ease var(--reveal-delay, 0s);
+}
+.couple-section .bismillah.reveal.in-view {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+}
+
+/* Couple intro: pure fade, no slide for readability */
+.couple-intro.reveal {
+  transform: none;
+  transition: opacity 1.2s ease var(--reveal-delay, 0s);
+}
+
+/* Gallery items: scale + translate stagger */
+.gallery-item.reveal {
+  transform: translateY(24px) scale(0.97);
+  transition: opacity 0.65s ease var(--reveal-delay, 0s),
+              transform 0.75s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s);
+}
+
+/* Footer: gentle entrance */
+.inv-footer.reveal {
+  transform: translateY(16px);
+  transition: opacity 1s ease var(--reveal-delay, 0s),
+              transform 1s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s);
+}
+
+/* ── Decorative Micro-Animations ───────────────────── */
+
+/* Badge lines subtle pulse */
+@keyframes badgeLinePulse {
+  0%, 100% { opacity: 0.35; }
+  50%      { opacity: 0.65; }
+}
+.cover-badge .badge-line {
+  animation: badgeLinePulse 4s ease-in-out 3.5s infinite;
+}
+
+/* ── Enhanced Hover States ─────────────────────────── */
+
+/* Gallery: soft shadow elevation */
+.gallery-item:hover {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Form Interaction Polish ───────────────────────── */
+.field-input:focus {
+  box-shadow: 0 1px 6px rgba(201, 169, 110, 0.12);
+}
+
+/* ── Button Micro-Interactions ─────────────────────── */
+.btn-submit:hover {
+  box-shadow: 0 4px 16px rgba(201, 169, 110, 0.15);
+}
+.btn-submit:active {
+  transform: scale(0.97);
+}
+
+.gift-copy-btn:active {
+  transform: scale(0.96);
+}
+
+/* ── Enhanced Music Playing State ──────────────────── */
+.cover-actions--floating .cover-action-btn.playing {
+  background: rgba(201, 169, 110, 0.12);
+  border-color: var(--gold);
+}
+[data-theme="dark"] .cover-actions--floating .cover-action-btn.playing {
+  background: rgba(212, 184, 120, 0.12);
+}
+
+/* ── Dark Mode Smooth Transition ───────────────────── */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition-duration: 0.5s !important;
+  transition-timing-function: ease !important;
+}
+html.theme-transitioning canvas {
+  transition: none !important;
+}
+
+/* ── RSVP Success Enhanced ─────────────────────────── */
+.rsvp-success {
+  animation: successReveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes successReveal {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Copy Toast Gold Accent ────────────────────────── */
+.copy-toast.show {
+  box-shadow: 0 4px 24px rgba(201, 169, 110, 0.12), 0 8px 32px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Disable premium upgrade for reduced-motion ────── */
+@media (prefers-reduced-motion: reduce) {
+  #cover.is-leaving {
+    transition: none !important;
+    filter: none !important;
+  }
+  .couple-section .bismillah.reveal {
+    filter: none !important;
+  }
+  .cover-badge .badge-line {
+    animation: none !important;
+  }
+  html.theme-transitioning,
+  html.theme-transitioning *,
+  html.theme-transitioning *::before,
+  html.theme-transitioning *::after {
+    transition: none !important;
+  }
+  .rsvp-success {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+
 /* Disable enhanced animations for reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   .event-card .card-eyebrow,

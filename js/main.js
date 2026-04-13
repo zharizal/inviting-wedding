@@ -657,7 +657,11 @@ function setupDarkMode() {
   const btn = document.getElementById('themeBtn');
   const saved = localStorage.getItem('theme');
 
-  function apply(theme) {
+  function apply(theme, animate) {
+    if (animate) {
+      document.documentElement.classList.add('theme-transitioning');
+      setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 600);
+    }
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
     btn.setAttribute('aria-label', theme === 'dark' ? 'Mode terang' : 'Mode gelap');
@@ -672,7 +676,7 @@ function setupDarkMode() {
 
   btn.addEventListener('click', () => {
     const current = document.documentElement.getAttribute('data-theme');
-    apply(current === 'dark' ? 'light' : 'dark');
+    apply(current === 'dark' ? 'light' : 'dark', true);
   });
 }
 
@@ -684,8 +688,13 @@ function openInvitation({ cover, main, overlay, particles }) {
   btn.disabled = true;
   btn.setAttribute('aria-busy', 'true');
 
-  overlay.classList.add('fade-in');
+  // Phase 1: Cover blurs out cinematically
+  cover.classList.add('is-leaving');
 
+  // Phase 2: Overlay fades in while cover exits
+  setTimeout(() => overlay.classList.add('fade-in'), 400);
+
+  // Phase 3: Switch content once overlay is opaque
   setTimeout(() => {
     cover.setAttribute('aria-hidden', 'true');
     cover.style.display = 'none';
@@ -713,11 +722,12 @@ function openInvitation({ cover, main, overlay, particles }) {
     setupLightbox();
     if (particles) particles.destroy();
 
+    // Phase 4: Reveal main content
     overlay.classList.remove('fade-in');
     overlay.classList.add('fade-out');
-    setTimeout(() => overlay.classList.remove('fade-out'), 900);
+    setTimeout(() => overlay.classList.remove('fade-out'), 1000);
 
-  }, 720);
+  }, 1100);
 }
 
 
