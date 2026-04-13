@@ -208,10 +208,11 @@ abbr { text-decoration: none; }
 /* Date (cover) */
 .cover-date {
   font-family: var(--f-heading);
-  font-size: clamp(9.5px, 2vw, 11.5px);
-  letter-spacing: 4.5px;
+  font-size: clamp(10.5px, 2.2vw, 12.5px);
+  font-weight: 600;
+  letter-spacing: 4px;
   text-transform: uppercase;
-  color: var(--cream-dim);
+  color: var(--cream);
   margin-bottom: 30px;
 }
 .cover-date time { display: flex; align-items: center; gap: 12px; }
@@ -294,34 +295,35 @@ abbr { text-decoration: none; }
 }
 
 
-/* ── Floating Music Button ──────────────────────────── */
-.music-btn {
-  position: fixed;
-  bottom: calc(80px + env(safe-area-inset-bottom, 0px));
-  right: 20px;
-  z-index: var(--z-music);
-  width: 42px;
-  height: 42px;
+/* ── Cover Action Buttons (theme + music) ──────────── */
+.cover-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.cover-action-btn {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: 1px solid var(--gold-dim);
-  background: rgba(255, 255, 255, 0.92);
+  background: transparent;
   color: var(--gold);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(12px);
   transition: border-color 0.3s ease, color 0.3s ease, background 0.3s ease;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
   outline: none;
 }
-.music-btn:hover, .music-btn.playing { border-color: var(--gold); background: rgba(201, 169, 110, 0.12); }
-.music-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
-.music-btn.playing { animation: musicPulse 2s ease-in-out infinite; }
+.cover-action-btn:hover { border-color: var(--gold); background: rgba(201, 169, 110, 0.1); }
+.cover-action-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.cover-action-btn.playing { border-color: var(--gold); animation: musicPulse 2s ease-in-out infinite; }
 
 @keyframes musicPulse {
-  0%, 100% { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07), 0 0 0 0 var(--gold-glow); }
-  50%       { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07), 0 0 0 8px transparent; }
+  0%, 100% { box-shadow: 0 0 0 0 var(--gold-glow); }
+  50%       { box-shadow: 0 0 0 8px transparent; }
 }
 
 
@@ -1039,7 +1041,6 @@ abbr { text-decoration: none; }
   .corner-bl, .corner-br { bottom: 16px; }
   .corner-tl, .corner-bl { left: 16px; }
   .corner-tr, .corner-br { right: 16px; }
-  .music-btn       { bottom: calc(74px + env(safe-area-inset-bottom, 0px)); right: 14px; width: 38px; height: 38px; }
 }
 
 @media (max-height: 640px) {
@@ -1061,7 +1062,7 @@ abbr { text-decoration: none; }
   }
   .btn-open .btn-fill,
   .btn-submit .btn-fill { transition: none !important; }
-  .music-btn { animation: none !important; }
+  .cover-action-btn.playing { animation: none !important; }
 }
 
 
@@ -1543,33 +1544,9 @@ abbr { text-decoration: none; }
   border-color: rgba(212, 184, 120, 0.12);
 }
 
-[data-theme="dark"] .theme-btn,
-[data-theme="dark"] .music-btn {
-  background: rgba(26, 23, 18, 0.92);
-  border-color: rgba(212, 184, 120, 0.25);
+[data-theme="dark"] .cover-action-btn {
+  border-color: rgba(212, 184, 120, 0.3);
 }
-
-/* Theme toggle button */
-.theme-btn {
-  position: fixed;
-  bottom: calc(80px + env(safe-area-inset-bottom, 0px));
-  right: 68px;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 1px solid var(--gold-dim);
-  background: rgba(255, 255, 255, 0.92);
-  color: var(--gold);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: var(--z-music);
-  backdrop-filter: blur(12px);
-  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-}
-.theme-btn:hover { border-color: var(--gold); transform: scale(1.06); }
 
 .theme-icon--dark  { display: none; }
 [data-theme="dark"] .theme-icon--light { display: none; }
@@ -1689,7 +1666,7 @@ abbr { text-decoration: none; }
 
 
 @media (max-width: 480px) {
-  .theme-btn { bottom: calc(74px + env(safe-area-inset-bottom, 0px)); right: 58px; width: 38px; height: 38px; }
+  .cover-action-btn { width: 36px; height: 36px; }
 }
 
 
