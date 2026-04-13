@@ -1,0 +1,548 @@
+/* ════════════════════════════════════════════════════
+   UNDANGAN DIGITAL — main.js  (Phase 3)
+   ════════════════════════════════════════════════════ */
+
+'use strict';
+
+
+/* ── Particle System ────────────────────────────────── */
+
+class Particles {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.ctx    = canvas.getContext('2d');
+    this.pool   = [];
+    this.raf    = null;
+    this.W = this.H = 0;
+    this._onResize = () => this._resize();
+    window.addEventListener('resize', this._onResize);
+    this._resize();
+    this._populate();
+    this._tick();
+  }
+  _resize() {
+    this.W = this.canvas.width  = window.innerWidth;
+    this.H = this.canvas.height = window.innerHeight;
+  }
+  _make() {
+    // Warm Ivory theme: soft gold shimmer on light background — keep alpha very low
+    const t = Math.random();
+    const color = t > 0.55 ? [184, 146, 74]   // deep amber gold
+                : t > 0.25 ? [201, 169, 110]   // standard gold
+                :             [160, 128, 68];   // warm antique gold
+    return {
+      x: Math.random() * this.W,  y: Math.random() * this.H,
+      r: Math.random() * 1.2 + 0.25,
+      alpha: Math.random() * 0.13 + 0.03,   // very subtle on light bg
+      vy: Math.random() * 0.2 + 0.05,
+      vx: (Math.random() - 0.5) * 0.12,
+      phase: Math.random() * Math.PI * 2,
+      freq:  Math.random() * 0.012 + 0.005,
+      color,
+    };
+  }
+  _populate() {
+    const n = Math.min(110, Math.floor((this.W * this.H) / 10000));
+    for (let i = 0; i < n; i++) this.pool.push(this._make());
+  }
+  _tick() {
+    const { ctx, W, H } = this;
+    ctx.clearRect(0, 0, W, H);
+    for (const p of this.pool) {
+      p.phase += p.freq;
+      p.y -= p.vy;
+      p.x += p.vx;
+      if (p.y < -4)    { p.y = H + 4; p.x = Math.random() * W; }
+      if (p.x < -4)    { p.x = W + 4; }
+      if (p.x > W + 4) { p.x = -4; }
+      const a = p.alpha * (0.35 + 0.65 * Math.abs(Math.sin(p.phase)));
+      const [r, g, b] = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${r},${g},${b},${a.toFixed(3)})`;
+      ctx.fill();
+    }
+    this.raf = requestAnimationFrame(() => this._tick());
+  }
+  destroy() {
+    cancelAnimationFrame(this.raf);
+    window.removeEventListener('resize', this._onResize);
+  }
+}
+
+
+/* ── Ripple ─────────────────────────────────────────── */
+
+function spawnRipple(btn, e) {
+  const rect = btn.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height) * 2.2;
+  const el   = document.createElement('span');
+  el.style.cssText = [
+    'position:absolute',
+    `width:${size}px`, `height:${size}px`,
+    `left:${(e.clientX - rect.left) - size / 2}px`,
+    `top:${(e.clientY - rect.top) - size / 2}px`,
+    'border-radius:50%', 'background:rgba(255,255,255,0.25)',
+    'transform:scale(0)', 'animation:rippleAnim 0.65s ease-out forwards',
+    'pointer-events:none', 'z-index:2',
+  ].join(';');
+  btn.appendChild(el);
+  el.addEventListener('animationend', () => el.remove());
+}
+
+
+/* ── Guest Name ─────────────────────────────────────── */
+
+function resolveGuestName() {
+  try {
+    const raw = new URLSearchParams(window.location.search).get('to');
+    return raw ? decodeURIComponent(raw.replace(/\+/g, ' ')).trim() : null;
+  } catch { return null; }
+}
+
+
+/* ── Config Renderer ────────────────────────────────── */
+
+function renderConfig() {
+  const w = WEDDING;
+
+  /* Cover */
+  document.getElementById('nameGroom').textContent     = w.groom;
+  document.getElementById('nameBride').textContent     = w.bride;
+  document.getElementById('coverDate').setAttribute('datetime', w.dateISO);
+  document.getElementById('coverDayName').textContent  = w.dayName;
+  document.getElementById('coverDateFull').textContent = w.dateFull;
+  document.getElementById('btnOpen').setAttribute(
+    'aria-label', `Buka undangan pernikahan ${w.groom} dan ${w.bride}`
+  );
+
+  /* Meta */
+  const title = `Undangan Pernikahan — ${w.groom} & ${w.bride}`;
+  document.title = title;
+  document.getElementById('ogTitle').setAttribute('content', title);
+  document.getElementById('metaDesc').setAttribute(
+    'content', `Undangan Pernikahan ${w.groom} & ${w.bride} — ${w.dateFull}, ${w.venueCity}.`
+  );
+  document.getElementById('ogDesc').setAttribute(
+    'content', `Dengan penuh kebahagiaan, kami mengundang Anda untuk hadir dalam pernikahan ${w.groom} & ${w.bride}.`
+  );
+
+  /* Couple section */
+  document.getElementById('profileGroom').textContent = w.groom;
+  document.getElementById('profileBride').textContent = w.bride;
+  const gpEl = document.getElementById('profileGroomParents');
+  const bpEl = document.getElementById('profileBrideParents');
+  if (w.groomParents) { gpEl.textContent = w.groomParents; } else { gpEl.hidden = true; }
+  if (w.brideParents) { bpEl.textContent = w.brideParents; } else { bpEl.hidden = true; }
+
+  /* Events */
+  const dateLabel = `${w.dayName}, ${w.dateFull}`;
+  document.getElementById('akadTime').textContent     = w.akad.time;
+  document.getElementById('akadDate').textContent     = dateLabel;
+  document.getElementById('akadVenue').textContent    = w.akad.venue;
+  document.getElementById('akadAddress').textContent  = w.akad.address;
+  document.getElementById('akadMaps').href            = w.akad.mapsUrl || w.mapsUrl;
+  document.getElementById('resepsiTime').textContent    = w.resepsi.time;
+  document.getElementById('resepsiDate').textContent    = dateLabel;
+  document.getElementById('resepsiVenue').textContent   = w.resepsi.venue;
+  document.getElementById('resepsiAddress').textContent = w.resepsi.address;
+  document.getElementById('resepsiMaps').href           = w.resepsi.mapsUrl || w.mapsUrl;
+
+  /* Footer */
+  document.getElementById('footerNames').textContent = `${w.groom} & ${w.bride}`;
+}
+
+
+/* ── Gallery Renderer ───────────────────────────────── */
+
+function renderGallery() {
+  const grid   = document.getElementById('galleryGrid');
+  if (!grid) return;
+  const photos = (WEDDING.gallery || []).slice(0, 5);
+  const count  = 5;
+
+  for (let i = 0; i < count; i++) {
+    const src = photos[i] || null;
+    const fig = document.createElement('figure');
+    fig.className = 'gallery-item reveal';
+    fig.style.setProperty('--reveal-delay', `${i * 0.1}s`);
+    fig.setAttribute('role', 'listitem');
+    fig.setAttribute('aria-label', `Foto ${i + 1}`);
+
+    if (src) {
+      const img = document.createElement('img');
+      img.src    = src;
+      img.alt    = `Foto pre-wedding ${i + 1}`;
+      img.loading = 'lazy';
+      img.addEventListener('load',  () => img.classList.add('loaded'));
+      img.addEventListener('error', () => img.remove()); // fall through to placeholder
+      fig.appendChild(img);
+    }
+
+    const ph = document.createElement('div');
+    ph.className = 'gallery-placeholder';
+    ph.setAttribute('aria-hidden', 'true');
+    fig.appendChild(ph);
+
+    grid.appendChild(fig);
+  }
+}
+
+
+/* ── Gift Renderer ──────────────────────────────────── */
+
+function formatAccountNumber(num) {
+  return String(num).replace(/\D/g, '').replace(/(.{4})(?=.)/g, '$1 ');
+}
+
+function renderGift() {
+  const container = document.getElementById('giftCards');
+  if (!container) return;
+  const accounts = WEDDING.bankAccounts || [];
+
+  if (!accounts.length) {
+    container.closest('.gift-section').hidden = true;
+    return;
+  }
+
+  accounts.forEach((acc, i) => {
+    const card = document.createElement('div');
+    card.className = 'gift-card reveal';
+    card.style.setProperty('--reveal-delay', `${i * 0.15}s`);
+
+    card.innerHTML = `
+      <p class="gift-bank">${acc.bank}</p>
+      <div class="gift-divider" aria-hidden="true"></div>
+      <p class="gift-number">${formatAccountNumber(acc.accountNumber)}</p>
+      <p class="gift-name">a.n. ${acc.accountName}</p>
+      <button
+        class="gift-copy-btn"
+        type="button"
+        data-copy="${acc.accountNumber}"
+        aria-label="Salin nomor rekening ${acc.bank} atas nama ${acc.accountName}">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+        Salin Rekening
+      </button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+
+/* ── Copy to Clipboard + Toast ──────────────────────── */
+
+let toastTimer = null;
+
+function showCopyToast(message = 'Berhasil Disalin') {
+  let toast = document.querySelector('.copy-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.className = 'copy-toast';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+
+  clearTimeout(toastTimer);
+  toast.classList.remove('show');
+
+  // Force reflow for re-trigger
+  toast.offsetHeight; // eslint-disable-line no-unused-expressions
+  toast.classList.add('show');
+
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+function setupCopyButtons() {
+  document.getElementById('giftCards')?.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.gift-copy-btn');
+    if (!btn) return;
+
+    const text = btn.dataset.copy;
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      // Fallback for browsers without Clipboard API
+      const ta = Object.assign(document.createElement('textarea'), {
+        value: text,
+        style: 'position:absolute;left:-9999px;opacity:0;',
+      });
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+    }
+
+    btn.classList.add('copied');
+    setTimeout(() => btn.classList.remove('copied'), 1600);
+    showCopyToast('Berhasil Disalin ✓');
+  });
+}
+
+
+/* ── Scroll Animations ──────────────────────────────── */
+
+function setupScrollAnimations() {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1, rootMargin: '0px 0px -28px 0px' }
+  );
+  document.querySelectorAll('#main .reveal').forEach((el) => observer.observe(el));
+}
+
+
+/* ── Countdown ──────────────────────────────────────── */
+
+function startCountdown() {
+  const target = new Date(WEDDING.countdownISO).getTime();
+  const cdEl   = document.getElementById('countdown');
+  const doneEl = document.getElementById('countdownDone');
+  const els    = {
+    days:  document.getElementById('cdDays'),
+    hours: document.getElementById('cdHours'),
+    mins:  document.getElementById('cdMins'),
+    secs:  document.getElementById('cdSecs'),
+  };
+
+  const pad = (n) => String(Math.max(0, n)).padStart(2, '0');
+
+  function tick(el, value) {
+    if (el.textContent === value) return;
+    el.textContent = value;
+    el.classList.remove('cd-tick');
+    el.offsetHeight; // eslint-disable-line no-unused-expressions
+    el.classList.add('cd-tick');
+    el.addEventListener('animationend', () => el.classList.remove('cd-tick'), { once: true });
+  }
+
+  function update() {
+    const diff = target - Date.now();
+    if (diff <= 0) {
+      cdEl.hidden = true;
+      doneEl.removeAttribute('hidden');
+      return;
+    }
+    tick(els.days,  pad(Math.floor(diff / 86400000)));
+    tick(els.hours, pad(Math.floor((diff % 86400000) / 3600000)));
+    tick(els.mins,  pad(Math.floor((diff % 3600000) / 60000)));
+    tick(els.secs,  pad(Math.floor((diff % 60000) / 1000)));
+  }
+
+  update();
+  setInterval(update, 1000);
+}
+
+
+/* ── RSVP Form ──────────────────────────────────────── */
+
+function setupRSVP() {
+  const form    = document.getElementById('rsvpForm');
+  const success = document.getElementById('rsvpSuccess');
+  const errorEl = document.getElementById('rsvpError');
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (errorEl) errorEl.hidden = true;
+
+    const name       = document.getElementById('rsvpName').value.trim();
+    const attendance = form.querySelector('input[name="attendance"]:checked')?.value;
+    const message    = document.getElementById('rsvpMessage').value.trim();
+
+    if (!name) { document.getElementById('rsvpName').focus(); return; }
+
+    const submitBtn = form.querySelector('.btn-submit');
+    submitBtn.disabled = true;
+    submitBtn.querySelector('.btn-label').textContent = 'Mengirim…';
+
+    try {
+      const res = await fetch(`${SUPABASE.url}/rest/v1/rsvp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'apikey':        SUPABASE.key,
+          'Authorization': `Bearer ${SUPABASE.key}`,
+          'Prefer':        'return=minimal',
+        },
+        body: JSON.stringify({
+          name,
+          attendance: attendance || 'hadir',
+          message:    message || null,
+        }),
+      });
+
+      if (!res.ok) throw new Error(res.statusText);
+
+      form.hidden = true;
+      success.removeAttribute('hidden');
+    } catch {
+      submitBtn.disabled = false;
+      submitBtn.querySelector('.btn-label').textContent = 'Kirim';
+      if (errorEl) {
+        errorEl.hidden = false;
+        errorEl.textContent = 'Gagal mengirim. Silakan coba lagi.';
+      }
+    }
+  });
+}
+
+
+/* ── Floating Navigation ────────────────────────────── */
+
+function setupFloatNav() {
+  const navEl    = document.getElementById('floatNav');
+  const navItems = navEl.querySelectorAll('.nav-item');
+  navEl.removeAttribute('hidden');
+
+  // Smooth scroll on click
+  navItems.forEach((item) => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.getElementById(item.dataset.target);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Active section tracking
+  const sectionIds = ['sec-couple', 'sec-events', 'sec-gallery', 'sec-rsvp'];
+
+  const setActive = (id) => {
+    navItems.forEach((item) =>
+      item.classList.toggle('is-active', item.dataset.target === id)
+    );
+  };
+
+  setActive('sec-couple'); // default on open
+
+  const sectionObs = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) setActive(entry.target.id);
+      });
+    },
+    { rootMargin: '-25% 0px -65% 0px', threshold: 0 }
+  );
+
+  sectionIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) sectionObs.observe(el);
+  });
+}
+
+
+/* ── Audio ──────────────────────────────────────────── */
+
+function setupAudio() {
+  if (!WEDDING.audioSrc) return null;
+
+  const audio    = document.getElementById('bgAudio');
+  const musicBtn = document.getElementById('musicBtn');
+  audio.src = WEDDING.audioSrc;
+  musicBtn.removeAttribute('hidden');
+
+  let playing = false;
+
+  musicBtn.addEventListener('click', () => {
+    if (playing) {
+      audio.pause();
+      musicBtn.classList.remove('playing');
+      musicBtn.setAttribute('aria-label', 'Putar musik');
+    } else {
+      audio.play().catch(() => {});
+      musicBtn.classList.add('playing');
+      musicBtn.setAttribute('aria-label', 'Pause musik');
+    }
+    playing = !playing;
+  });
+
+  return () => {
+    audio.play().catch(() => {});
+    musicBtn.classList.add('playing');
+    musicBtn.setAttribute('aria-label', 'Pause musik');
+    playing = true;
+  };
+}
+
+
+/* ── Page Transition ────────────────────────────────── */
+
+function openInvitation({ cover, main, overlay, startAudio }) {
+  const btn = document.getElementById('btnOpen');
+  btn.disabled = true;
+  btn.setAttribute('aria-busy', 'true');
+
+  overlay.classList.add('fade-in');
+
+  setTimeout(() => {
+    cover.setAttribute('aria-hidden', 'true');
+    cover.style.display = 'none';
+
+    main.style.display = 'block';
+    main.removeAttribute('aria-hidden');
+    document.body.style.overflow  = 'auto';
+    document.body.style.overflowX = 'hidden';
+
+    main.offsetHeight; // eslint-disable-line no-unused-expressions
+
+    setupScrollAnimations();
+    startCountdown();
+    setupRSVP();
+    setupFloatNav();
+    if (startAudio) startAudio();
+
+    overlay.classList.remove('fade-in');
+    overlay.classList.add('fade-out');
+    setTimeout(() => overlay.classList.remove('fade-out'), 900);
+
+  }, 720);
+}
+
+
+/* ── Init ───────────────────────────────────────────── */
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* Populate all data from config */
+  renderConfig();
+  renderGallery();
+  renderGift();
+  setupCopyButtons();
+
+  /* Particles (cover only — stops being visible once sections cover it) */
+  new Particles(document.getElementById('particles'));
+
+  /* Guest name */
+  const guestName  = resolveGuestName();
+  const guestBlock = document.getElementById('guestBlock');
+  if (guestName) {
+    document.getElementById('guestName').textContent = guestName;
+  } else {
+    guestBlock.style.display = 'none';
+  }
+
+  /* Audio */
+  const startAudio = setupAudio();
+
+  /* Cover button */
+  const cover   = document.getElementById('cover');
+  const main    = document.getElementById('main');
+  const overlay = document.getElementById('overlay');
+  const btn     = document.getElementById('btnOpen');
+
+  btn.addEventListener('click', (e) => {
+    spawnRipple(btn, e);
+    setTimeout(() => openInvitation({ cover, main, overlay, startAudio }), 120);
+  });
+});
