@@ -53,7 +53,7 @@
   /* ── Fonts ──────────────────────────────────────── */
   --f-display: 'Cormorant Garamond', Georgia, serif;
   --f-heading: 'Quicksand', system-ui, sans-serif;
-  --f-body:    'Nunito', system-ui, sans-serif;
+  --f-body:    'Quicksand', system-ui, sans-serif;
 
   --max-w:     620px;
   --section-p: clamp(56px, 10vw, 96px);
@@ -78,7 +78,7 @@ body {
   background: var(--morning-bg);
   color: var(--text-primary);
   font-family: var(--f-body);
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.6;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
@@ -108,8 +108,6 @@ abbr { text-decoration: none; }
   pointer-events: none;
   transition: opacity 0.7s ease;
 }
-#overlay.fade-in  { opacity: 1; pointer-events: all; }
-#overlay.fade-out { opacity: 0; pointer-events: none; }
 
 
 /* ══════════════════════════════════════════════════════
@@ -135,6 +133,25 @@ abbr { text-decoration: none; }
     radial-gradient(ellipse 40% 50% at 70% 30%, rgba(232, 180, 184, 0.06) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
+}
+
+/* Text contrast scrim — soft halo behind cover content */
+#cover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 52% 62% at 50% 52%,
+    rgba(251, 248, 242, 0.32) 0%,
+    rgba(251, 248, 242, 0.1) 42%,
+    transparent 68%);
+  z-index: 29;
+  pointer-events: none;
+}
+[data-theme="dark"] #cover::before {
+  background: radial-gradient(ellipse 52% 62% at 50% 52%,
+    rgba(8, 14, 8, 0.42) 0%,
+    rgba(8, 14, 8, 0.12) 42%,
+    transparent 68%);
 }
 
 /* Corner ornaments — leaf style */
@@ -164,7 +181,7 @@ abbr { text-decoration: none; }
   max-width: var(--max-w);
 }
 
-/* Entrance animations */
+/* Entrance animations — GSAP overrides when available */
 .anim-item {
   opacity: 0;
   animation: fadeUp 1s ease var(--d, 0s) forwards;
@@ -374,7 +391,7 @@ abbr { text-decoration: none; }
 }
 
 
-/* ── Scroll Reveal ──────────────────────────────────── */
+/* ── Scroll Reveal — GSAP ScrollTrigger or CSS fallback ── */
 .reveal {
   opacity: 0;
   transform: translateY(20px);
@@ -476,7 +493,7 @@ abbr { text-decoration: none; }
 .couple-intro {
   font-family: var(--f-body);
   font-size: clamp(13px, 2.5vw, 15px);
-  font-weight: 300;
+  font-weight: 400;
   color: var(--text-secondary);
   line-height: 2;
   margin-bottom: 44px;
@@ -505,7 +522,7 @@ abbr { text-decoration: none; }
 
 .profile-name {
   font-family: var(--f-display);
-  font-size: clamp(28px, 6vw, 44px);
+  font-size: clamp(21px, 5.5vw, 44px);
   font-weight: 400;
   font-style: italic;
   color: var(--text-primary);
@@ -544,7 +561,7 @@ abbr { text-decoration: none; }
 @media (max-width: 560px) {
   .profiles-grid {
     grid-template-columns: 1fr;
-    gap: 24px 0;
+    gap: 20px 0;
   }
   .profile { text-align: center !important; align-items: center; }
   .profiles-divider {
@@ -555,6 +572,11 @@ abbr { text-decoration: none; }
   }
   .divider-line { display: none; }
   .divider-amp { font-size: 36px; }
+}
+
+@media (max-width: 400px) {
+  .couple-section .section-inner { padding: 32px 16px; }
+  .couple-intro { margin-bottom: 32px; }
 }
 
 
@@ -687,6 +709,35 @@ abbr { text-decoration: none; }
   align-items: center;
 }
 
+/* Golden bokeh — floats gently to suggest warm light */
+.countdown-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(circle 4px at  8% 28%, rgba(184,149,106,0.30) 50%, transparent 50%),
+    radial-gradient(circle 3px at 18% 68%, rgba(212,176,120,0.22) 50%, transparent 50%),
+    radial-gradient(circle 2px at 30% 15%, rgba(184,149,106,0.28) 50%, transparent 50%),
+    radial-gradient(circle 5px at 42% 80%, rgba(212,176,120,0.18) 50%, transparent 50%),
+    radial-gradient(circle 3px at 58% 38%, rgba(184,149,106,0.24) 50%, transparent 50%),
+    radial-gradient(circle 2px at 68% 12%, rgba(232,200,120,0.22) 50%, transparent 50%),
+    radial-gradient(circle 4px at 78% 62%, rgba(184,149,106,0.28) 50%, transparent 50%),
+    radial-gradient(circle 3px at 88% 30%, rgba(212,176,120,0.20) 50%, transparent 50%),
+    radial-gradient(circle 2px at 14% 85%, rgba(184,149,106,0.22) 50%, transparent 50%),
+    radial-gradient(circle 3px at 52% 55%, rgba(232,200,120,0.16) 50%, transparent 50%),
+    radial-gradient(circle 2px at 36% 45%, rgba(212,176,120,0.20) 50%, transparent 50%),
+    radial-gradient(circle 4px at 72% 88%, rgba(184,149,106,0.18) 50%, transparent 50%),
+    radial-gradient(circle 2px at 94% 50%, rgba(212,176,120,0.22) 50%, transparent 50%),
+    radial-gradient(circle 3px at  4% 50%, rgba(184,149,106,0.20) 50%, transparent 50%);
+  animation: bokehFloat 12s ease-in-out infinite alternate;
+}
+@keyframes bokehFloat {
+  0%   { opacity: 0.55; transform: translateY(0); }
+  100% { opacity: 1;    transform: translateY(-10px); }
+}
+
 .countdown-section .section-ornament { color: var(--accent); }
 
 .countdown {
@@ -754,7 +805,13 @@ abbr { text-decoration: none; }
 
 .gallery-section {
   background: linear-gradient(180deg,
-    #D4B8A4 0%, #7A8E8A 35%, var(--evening-mid) 70%, var(--evening-bg) 100%);
+    #D4B8A4 0%,
+    #B0A898 15%,
+    #8A9490 30%,
+    #6A8486 45%,
+    var(--evening-mid) 65%,
+    var(--evening-bg) 85%,
+    var(--evening-deep) 100%);
 }
 
 .gallery-section .section-ornament { color: var(--accent-bright); }
@@ -962,7 +1019,7 @@ abbr { text-decoration: none; }
   position: fixed;
   bottom: 90px;
   left: 50%;
-  transform: translateX(-50%) translateY(12px);
+  transform: translateX(-50%);
   background: rgba(30, 42, 51, 0.96);
   border: 1px solid rgba(232, 200, 120, 0.25);
   border-radius: var(--radius-lg);
@@ -973,12 +1030,14 @@ abbr { text-decoration: none; }
   letter-spacing: 3px;
   text-transform: uppercase;
   padding: 12px 28px;
-  opacity: 0;
-  transition: opacity 0.3s ease, transform 0.3s ease;
   z-index: 200;
   backdrop-filter: blur(12px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-50%) translateY(12px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
   pointer-events: none;
 }
 .copy-toast.show {
@@ -1035,7 +1094,7 @@ abbr { text-decoration: none; }
   color: var(--text-light);
   font-family: var(--f-body);
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 400;
   padding: 12px 8px;
   outline: none;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -1134,6 +1193,10 @@ abbr { text-decoration: none; }
   gap: 16px;
   animation: successReveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
+@keyframes successReveal {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
 .success-title {
   font-family: var(--f-display);
   font-size: clamp(26px, 5vw, 36px);
@@ -1148,11 +1211,6 @@ abbr { text-decoration: none; }
   font-weight: 300;
   color: var(--text-light-muted);
   line-height: 2;
-}
-
-@keyframes successReveal {
-  from { opacity: 0; transform: translateY(20px) scale(0.97); }
-  to   { opacity: 1; transform: none; }
 }
 
 
@@ -1226,7 +1284,7 @@ abbr { text-decoration: none; }
 .wish-message {
   font-family: var(--f-body);
   font-size: 13px;
-  font-weight: 300;
+  font-weight: 400;
   color: var(--text-light-muted);
   line-height: 1.7;
 }
@@ -1301,7 +1359,7 @@ abbr { text-decoration: none; }
 .footer-closing {
   font-family: var(--f-body);
   font-size: clamp(12.5px, 2.5vw, 14px);
-  font-weight: 300;
+  font-weight: 400;
   color: var(--text-light-muted);
   line-height: 2.2;
   max-width: 400px;
@@ -1401,7 +1459,6 @@ abbr { text-decoration: none; }
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 30px rgba(232, 200, 120, 0.04);
   animation: navAppear 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-
 @keyframes navAppear {
   from { opacity: 0; transform: translateX(-50%) translateY(16px); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0);    }
@@ -1453,13 +1510,8 @@ abbr { text-decoration: none; }
   animation: warmShimmer 5s ease-in-out 4s infinite;
 }
 
-/* ── Section Ornament Gentle Sway ─────────────────── */
-@keyframes ornamentSway {
-  0%, 100% { transform: scale(1) rotate(0deg);     opacity: 0.8; }
-  50%       { transform: scale(1.015) rotate(0.5deg); opacity: 1; }
-}
+/* ── Section Ornament ─────────────────────────────── */
 .section-ornament {
-  animation: ornamentSway 7s ease-in-out infinite;
   transform-origin: center;
 }
 
@@ -1481,8 +1533,7 @@ abbr { text-decoration: none; }
   transform-origin: center;
   transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
 }
-.in-view ~ .section-title::after,
-.section-header .section-title::after {
+.section-ornament.in-view ~ .section-title::after {
   transform: translateX(-50%) scaleX(1);
 }
 
@@ -1545,18 +1596,14 @@ abbr { text-decoration: none; }
 
 
 /* ══════════════════════════════════════════════════════
-   STAGGER & ENHANCED REVEAL ANIMATIONS
+   STAGGER — Initial states + CSS fallback
    ══════════════════════════════════════════════════════ */
 
-/* Stagger children within event cards */
-.event-card.in-view .card-eyebrow  { animation: staggerUp 0.5s ease forwards; animation-delay: 0s; }
-.event-card.in-view .card-divider  { animation: staggerUp 0.5s ease forwards; animation-delay: 0.08s; }
-.event-card.in-view .card-time     { animation: staggerUp 0.5s ease forwards; animation-delay: 0.16s; }
-.event-card.in-view .card-date     { animation: staggerUp 0.5s ease forwards; animation-delay: 0.24s; }
-.event-card.in-view .card-venue    { animation: staggerUp 0.5s ease forwards; animation-delay: 0.32s; }
-.event-card.in-view .card-address  { animation: staggerUp 0.5s ease forwards; animation-delay: 0.4s; }
-.event-card.in-view .card-maps-btn { animation: staggerUp 0.5s ease forwards; animation-delay: 0.48s; }
+@keyframes staggerUp {
+  to { opacity: 1; transform: translateY(0); }
+}
 
+/* Event card children */
 .event-card .card-eyebrow,
 .event-card .card-divider,
 .event-card .card-time,
@@ -1565,63 +1612,47 @@ abbr { text-decoration: none; }
 .event-card .card-address,
 .event-card .card-maps-btn {
   opacity: 0;
-  transform: translateY(12px);
+  transform: translateY(8px);
 }
+.event-card.in-view .card-eyebrow  { animation: staggerUp 0.5s ease forwards; animation-delay: 0s; }
+.event-card.in-view .card-divider  { animation: staggerUp 0.5s ease forwards; animation-delay: 0.08s; }
+.event-card.in-view .card-time     { animation: staggerUp 0.5s ease forwards; animation-delay: 0.16s; }
+.event-card.in-view .card-date     { animation: staggerUp 0.5s ease forwards; animation-delay: 0.24s; }
+.event-card.in-view .card-venue    { animation: staggerUp 0.5s ease forwards; animation-delay: 0.32s; }
+.event-card.in-view .card-address  { animation: staggerUp 0.5s ease forwards; animation-delay: 0.4s; }
+.event-card.in-view .card-maps-btn { animation: staggerUp 0.5s ease forwards; animation-delay: 0.48s; }
 
-@keyframes staggerUp {
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Stagger gift cards */
-.gift-card.in-view .gift-bank     { animation: staggerUp 0.5s ease 0s forwards; }
-.gift-card.in-view .gift-divider  { animation: staggerUp 0.5s ease 0.08s forwards; }
-.gift-card.in-view .gift-number   { animation: staggerUp 0.5s ease 0.16s forwards; }
-.gift-card.in-view .gift-name     { animation: staggerUp 0.5s ease 0.24s forwards; }
-.gift-card.in-view .gift-copy-btn { animation: staggerUp 0.5s ease 0.32s forwards; }
-
+/* Gift card children */
 .gift-card .gift-bank,
 .gift-card .gift-divider,
 .gift-card .gift-number,
 .gift-card .gift-name,
 .gift-card .gift-copy-btn {
   opacity: 0;
-  transform: translateY(12px);
+  transform: translateY(8px);
 }
+.gift-card.in-view .gift-bank     { animation: staggerUp 0.5s ease 0s forwards; }
+.gift-card.in-view .gift-divider  { animation: staggerUp 0.5s ease 0.08s forwards; }
+.gift-card.in-view .gift-number   { animation: staggerUp 0.5s ease 0.16s forwards; }
+.gift-card.in-view .gift-name     { animation: staggerUp 0.5s ease 0.24s forwards; }
+.gift-card.in-view .gift-copy-btn { animation: staggerUp 0.5s ease 0.32s forwards; }
 
-/* Parallax float on section ornaments */
-@keyframes parallaxFloat {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50%      { transform: translateY(-6px) scale(1.01); }
+/* Countdown units */
+.countdown .cd-unit {
+  opacity: 0;
+  transform: translateY(8px);
 }
-.inv-section.in-view .section-ornament {
-  animation: parallaxFloat 8s ease-in-out infinite;
-}
-
-/* Countdown units stagger entrance */
 .countdown.in-view .cd-unit:nth-of-type(1) { animation: staggerUp 0.5s ease 0s forwards; }
 .countdown.in-view .cd-unit:nth-of-type(2) { animation: staggerUp 0.5s ease 0.1s forwards; }
 .countdown.in-view .cd-unit:nth-of-type(3) { animation: staggerUp 0.5s ease 0.2s forwards; }
 .countdown.in-view .cd-unit:nth-of-type(4) { animation: staggerUp 0.5s ease 0.3s forwards; }
-.countdown .cd-unit {
-  opacity: 0;
-  transform: translateY(12px);
-}
-
-/* Profile names subtle scale entrance */
-.profiles-grid.in-view .profile-name {
-  animation: nameReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-@keyframes nameReveal {
-  from { opacity: 0; transform: scale(0.92); letter-spacing: 0; }
-  to   { opacity: 1; transform: scale(1); letter-spacing: inherit; }
-}
 
 
 /* ══════════════════════════════════════════════════════
-   PREMIUM — Cinematic Cover & Section Reveals
+   PREMIUM — Cinematic Cover & Enhanced Reveals
    ══════════════════════════════════════════════════════ */
 
-/* Cover cinematic open */
+/* Cover cinematic open — CSS fallback when GSAP unavailable */
 #cover.is-leaving {
   transition: opacity 0.8s ease, filter 0.8s ease,
               transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1629,40 +1660,6 @@ abbr { text-decoration: none; }
   filter: blur(4px);
   transform: scale(0.97);
   pointer-events: none;
-}
-
-/* Bismillah: sacred scale + deblur */
-.couple-section .bismillah.reveal {
-  transform: scale(0.97);
-  filter: blur(2px);
-  transition: opacity 1s ease var(--reveal-delay, 0s),
-              transform 1s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s),
-              filter 1s ease var(--reveal-delay, 0s);
-}
-.couple-section .bismillah.reveal.in-view {
-  opacity: 1;
-  transform: none;
-  filter: blur(0);
-}
-
-/* Couple intro: pure fade */
-.couple-intro.reveal {
-  transform: none;
-  transition: opacity 1.2s ease var(--reveal-delay, 0s);
-}
-
-/* Gallery items: scale + translate stagger */
-.gallery-item.reveal {
-  transform: translateY(24px) scale(0.97);
-  transition: opacity 0.65s ease var(--reveal-delay, 0s),
-              transform 0.75s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s);
-}
-
-/* Footer: gentle entrance */
-.inv-footer.reveal {
-  transform: translateY(16px);
-  transition: opacity 1s ease var(--reveal-delay, 0s),
-              transform 1s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s);
 }
 
 /* Badge lines gentle pulse */
@@ -1690,6 +1687,7 @@ abbr { text-decoration: none; }
   display: block;
 }
 
+/* CSS fallback — GSAP overrides when available */
 @keyframes floatA {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50%      { transform: translateY(-12px) rotate(5deg); }
@@ -1726,7 +1724,6 @@ abbr { text-decoration: none; }
 
 .lightbox.is-open { animation: lbFadeIn 0.35s ease forwards; }
 .lightbox.is-closing { animation: lbFadeOut 0.3s ease forwards; }
-
 @keyframes lbFadeIn  { from { opacity: 0; } to { opacity: 1; } }
 @keyframes lbFadeOut { from { opacity: 1; } to { opacity: 0; } }
 
@@ -1887,9 +1884,17 @@ abbr { text-decoration: none; }
   background: rgba(212, 176, 120, 0.1);
 }
 
+[data-theme="dark"] .countdown-section::before { opacity: 0.45; }
+
 [data-theme="dark"] .gallery-section {
   background: linear-gradient(180deg,
-    #2C2418 0%, #1A2820 35%, var(--evening-mid) 70%, var(--evening-bg) 100%);
+    #2C2418 0%,
+    #242220 15%,
+    #1E2824 30%,
+    #182428 45%,
+    var(--evening-mid) 65%,
+    var(--evening-bg) 85%,
+    var(--evening-deep) 100%);
 }
 
 [data-theme="dark"] .copy-toast {
@@ -1971,6 +1976,7 @@ html.theme-transitioning canvas {
   .lightbox, .lightbox-img { animation: none !important; transition: none !important; }
   .cloud { animation: none !important; }
   .stars-layer { animation: none !important; }
+  .countdown-section::before { animation: none !important; opacity: 0.7 !important; transform: none !important; }
 }
 
 
@@ -1990,10 +1996,16 @@ html.theme-transitioning canvas {
 }
 
 /* Place images in assets/bg/ — these activate when images exist */
-.cover-bg-img  { background-image: url('../assets/bg/bg-cover.webp'); }
-.couple-bg-img { background-image: url('../assets/bg/bg-couple.webp'); }
-.events-bg-img { background-image: url('../assets/bg/bg-events.webp'); }
-.night-bg-img  { background-image: url('../assets/bg/bg-night.webp'); }
+.cover-bg-img  { background-image: url('../assets/bg/bg-cover.webp');  opacity: 0; transition: opacity 0.9s ease; }
+.couple-bg-img { background-image: url('../assets/bg/bg-couple.webp'); opacity: 0; transition: opacity 0.8s ease; }
+.events-bg-img { background-image: url('../assets/bg/bg-events.webp'); opacity: 0; transition: opacity 0.8s ease; }
+.night-bg-img  { background-image: url('../assets/bg/bg-night.webp');  opacity: 0; transition: opacity 0.8s ease; }
+
+/* Faded-in state — added by JS when image is loaded */
+.cover-bg-img.bg-loaded  { opacity: 0.92; }
+.couple-bg-img.bg-loaded { opacity: 0.65; }
+.events-bg-img.bg-loaded { opacity: 0.60; }
+.night-bg-img.bg-loaded  { opacity: 0.72; }
 
 
 /* ── CSS Landscape Fallback (Cover) ──────────────── */
@@ -2116,13 +2128,13 @@ html.theme-transitioning canvas {
 }
 
 
-/* Mountains (distant, blue-gray) */
+/* Mountains (distant, blue-gray) — fallback behind bg image */
 .ghibli-mountains {
   position: absolute;
   bottom: 35%;
   left: 0; right: 0;
   height: 30%;
-  z-index: 1;
+  z-index: 0;
   pointer-events: none;
   background:
     /* Mountain 1 - left */
@@ -2131,16 +2143,16 @@ html.theme-transitioning canvas {
     radial-gradient(ellipse 50% 120% at 50% 100%, #7A98A8 0%, transparent 70%),
     /* Mountain 3 - right */
     radial-gradient(ellipse 40% 100% at 80% 100%, #8AA8B8 0%, transparent 70%);
-  opacity: 0.5;
+  opacity: 0.25;
 }
 
-/* Rolling hills (green, layered) */
+/* Rolling hills (green, layered) — fallback behind bg image */
 .ghibli-hills {
   position: absolute;
   bottom: 15%;
   left: 0; right: 0;
   height: 35%;
-  z-index: 2;
+  z-index: 0;
   pointer-events: none;
   background:
     /* Hill 1 - left foreground */
@@ -2151,21 +2163,21 @@ html.theme-transitioning canvas {
     radial-gradient(ellipse 55% 75% at 85% 100%, #6A9A58 0%, transparent 65%),
     /* Hill 4 - background layer */
     radial-gradient(ellipse 80% 60% at 40% 100%, #88B878 0%, transparent 70%);
-  opacity: 0.65;
+  opacity: 0.2;
 }
 
-/* Meadow (bottom green strip) */
+/* Meadow (bottom green strip) — fallback behind bg image */
 .ghibli-meadow {
   position: absolute;
   bottom: 0;
   left: 0; right: 0;
   height: 20%;
-  z-index: 3;
+  z-index: 0;
   pointer-events: none;
   background: linear-gradient(180deg,
-    rgba(100, 160, 80, 0.3) 0%,
-    rgba(80, 140, 60, 0.5) 40%,
-    rgba(70, 130, 50, 0.6) 100%);
+    rgba(100, 160, 80, 0.1) 0%,
+    rgba(80, 140, 60, 0.18) 40%,
+    rgba(70, 130, 50, 0.22) 100%);
 }
 
 

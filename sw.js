@@ -2,13 +2,18 @@
    Service Worker — Cache-first for static assets
    ════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'undangan-v10';
+const CACHE_NAME = 'undangan-v13';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/css/main.css',
+  '/js/gsap.min.js',
   '/js/config.js',
   '/js/main.js',
+  '/assets/bg/bg-cover.webp',
+  '/assets/bg/bg-couple.webp',
+  '/assets/bg/bg-events.webp',
+  '/assets/bg/bg-night.webp',
   '/assets/gallery/foto-1.webp',
   '/assets/gallery/foto-2.webp',
   '/assets/gallery/foto-3.webp',
